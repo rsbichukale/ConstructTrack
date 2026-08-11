@@ -77,22 +77,19 @@ export function getAppState(): AppState {
 }
 
 function loadInitialState(): AppState {
-  const flats = generateInitialFlats();
-  const flatTasks = generateInitialFlatTasks(flats);
-
   const defaultState: AppState = {
-    sites: INITIAL_SITES,
-    flats,
-    roomZones: INITIAL_ROOM_ZONES,
-    taskCatalog: INITIAL_TASK_CATALOG,
-    executionPhases: INITIAL_EXECUTION_PHASES,
-    contractors: INITIAL_CONTRACTORS,
-    laborers: INITIAL_LABORERS,
-    flatTasks,
+    sites: [],
+    flats: [],
+    roomZones: [],
+    taskCatalog: [],
+    executionPhases: [],
+    contractors: [],
+    laborers: [],
+    flatTasks: [],
     logs: [],
     attendance: [],
-    dailyWorkTargets: INITIAL_DAILY_TARGETS,
-    pinnedFlatIds: [1, 2, 6], // Default pinned flats (101, 102, 201)
+    dailyWorkTargets: [],
+    pinnedFlatIds: [],
     snaggingItems: [],
     departmentAttendance: [],
     adminCredentials: {
@@ -103,6 +100,9 @@ function loadInitialState(): AppState {
       email: 'admin@constructtrack.com',
       phone: '+91 9876543210',
     },
+    trades: [],
+    wings: [],
+    floors: [],
   };
 
   currentState = defaultState;
