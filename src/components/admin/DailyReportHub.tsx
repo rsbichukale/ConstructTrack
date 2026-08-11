@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Calendar, Users, FileText, CheckCircle2, Share2, Printer, Download, Building, Send, Clock, Camera, Target, CheckSquare, Sun, Moon, AlertTriangle, Plus, ShieldCheck } from 'lucide-react';
-import { getAppState, saveAppState, addDailyWorkTarget, verifyDailyWorkTarget, saveDepartmentLaborAttendance } from '@/lib/dbState';
+import { getAppState, saveAppState, getDynamicTrades, addDailyWorkTarget, verifyDailyWorkTarget, saveDepartmentLaborAttendance } from '@/lib/dbState';
 import { ContractorAttendance, TradeType, DailyWorkTarget, DepartmentLaborAttendance } from '@/lib/types';
 
 export const DailyReportHub: React.FC = () => {
@@ -45,16 +45,7 @@ export const DailyReportHub: React.FC = () => {
   const [deptNarration, setDeptNarration] = useState<string>('');
 
   // Dynamic Trades List from Database
-  const trades: TradeType[] = Array.from(
-    new Set([
-      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 
-      'FABRICATION', 'WATERPROOFING', 'ELECTRICAL', 'PAINTING', 
-      'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
-      ...(state.taskCatalog || []).map(t => t.tradeType),
-      ...(state.contractors || []).map(c => c.tradeType),
-      ...(state.customTrades || []),
-    ])
-  ).filter(Boolean) as TradeType[];
+  const trades = getDynamicTrades(state);
 
   // Daily targets for selected date
   const selectedTargets = (state.dailyWorkTargets || []).filter(t => t.dateAssigned === selectedDate);

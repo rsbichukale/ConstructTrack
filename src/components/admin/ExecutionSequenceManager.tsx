@@ -18,7 +18,7 @@ import {
   Building2,
   Zap,
 } from 'lucide-react';
-import { getAppState, addExecutionPhase, updateExecutionPhase, reorderExecutionPhases, deleteExecutionPhase, saveAppState } from '@/lib/dbState';
+import { getAppState, addExecutionPhase, updateExecutionPhase, reorderExecutionPhases, deleteExecutionPhase, saveAppState, getDynamicTrades } from '@/lib/dbState';
 import { TradeType, ExecutionPhase } from '@/lib/types';
 
 export const ExecutionSequenceManager: React.FC = () => {
@@ -38,16 +38,7 @@ export const ExecutionSequenceManager: React.FC = () => {
   const [formIsMandatory, setFormIsMandatory] = useState(true);
 
   // Dynamic Trades List from Database
-  const trades: TradeType[] = Array.from(
-    new Set([
-      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 
-      'FABRICATION', 'WATERPROOFING', 'ELECTRICAL', 'PAINTING', 
-      'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
-      ...(state.taskCatalog || []).map(t => t.tradeType),
-      ...(state.contractors || []).map(c => c.tradeType),
-      ...(state.customTrades || []),
-    ])
-  ).filter(Boolean) as TradeType[];
+  const trades = getDynamicTrades(state);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);

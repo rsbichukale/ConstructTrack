@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Building, Users, UserCheck, CheckCircle2, Plus, Filter, Zap, Shield, Phone, Mail, DollarSign, Award, Layers, Trash2, PauseCircle, PlayCircle, AlertCircle } from 'lucide-react';
-import { getAppState, saveAppState } from '@/lib/dbState';
+import { getAppState, saveAppState, getDynamicTrades } from '@/lib/dbState';
 import { syncTradeToSupabase } from '@/lib/supabaseSync';
 import { Contractor, Laborer, TradeType, SkillLevel, FlatTaskPriority } from '@/lib/types';
 
@@ -171,27 +171,7 @@ export const ContractorManagementSuite: React.FC = () => {
   });
 
   // Dynamic Trades List from Database + Custom User-Created Trades
-  const trades: TradeType[] = Array.from(
-    new Set([
-      'BRICK WORK',
-      'PLASTER WORK',
-      'POP',
-      'TILES',
-      'PLUMBER',
-      'FABRICATION',
-      'WATERPROOFING',
-      'ELECTRICAL',
-      'PAINTING',
-      'CARPENTRY',
-      'FALSE CEILING',
-      'DOOR FITTING',
-      'SANITARY',
-      'CLEANING',
-      ...(state.taskCatalog || []).map(t => t.tradeType),
-      ...(state.contractors || []).map(c => c.tradeType),
-      ...(state.customTrades || []),
-    ])
-  ).filter(Boolean) as TradeType[];
+  const trades = getDynamicTrades(state);
 
   // Custom Trade Creation State
   const [isAddingNewTrade, setIsAddingNewTrade] = useState(false);

@@ -1,4 +1,4 @@
-import { Site, Flat, RoomZone, TaskCatalogItem, FlatTask, Contractor, Laborer, DailyProgressLog, ContractorAttendance, DepartmentLaborAttendance, DailyWorkTarget, ExecutionPhase, SnaggingItem, AdminUserCredentials, TradeMaster, WingMaster, FloorMaster } from './types';
+import { Site, Flat, RoomZone, TaskCatalogItem, FlatTask, Contractor, Laborer, DailyProgressLog, ContractorAttendance, DepartmentLaborAttendance, DailyWorkTarget, ExecutionPhase, SnaggingItem, AdminUserCredentials, TradeMaster, WingMaster, FloorMaster, TradeType } from './types';
 import { INITIAL_SITES, INITIAL_ROOM_ZONES, INITIAL_CONTRACTORS, INITIAL_LABORERS, INITIAL_TASK_CATALOG, INITIAL_DAILY_TARGETS, INITIAL_EXECUTION_PHASES, generateInitialFlats, generateInitialFlatTasks } from './seedData';
 import { saveOfflineLog } from '@/lib/offlineSync';
 import { syncTaskToSupabase, syncDailyProgressLogToSupabase, syncDailyWorkTargetToSupabase, syncSnaggingItemToSupabase, fetchStateFromSupabase, seedFullProjectDataToSupabase } from './supabaseSync';
@@ -128,6 +128,27 @@ export function resetAppState(): AppState {
   }
   currentState = null;
   return getAppState();
+}
+
+export function getDynamicTrades(state?: AppState): TradeType[] {
+  const st = state || getAppState();
+  const tradeCodesFromDb = (st.trades || []).map(t => t.tradeCode);
+  const tradeNamesFromDb = (st.trades || []).map(t => t.tradeName);
+  const tradeFromCatalog = (st.taskCatalog || []).map(t => t.tradeType);
+  const tradeFromContractors = (st.contractors || []).map(c => c.tradeType);
+  const customTrades = st.customTrades || [];
+
+  const unique = Array.from(
+    new Set([
+      ...tradeCodesFromDb,
+      ...tradeNamesFromDb,
+      ...tradeFromCatalog,
+      ...tradeFromContractors,
+      ...customTrades,
+    ])
+  ).filter(Boolean);
+
+  return unique as TradeType[];
 }
 
 // Check Trade Dependency Rules (Multi-prerequisite & Curing Hold Support)

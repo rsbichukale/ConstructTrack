@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Layers, Plus, CheckCircle2, Sparkles, Filter, Hash, X } from 'lucide-react';
-import { getAppState, saveAppState } from '@/lib/dbState';
+import { getAppState, saveAppState, getDynamicTrades } from '@/lib/dbState';
 import { TaskCatalogItem, TradeType, FlatTaskPriority, FlatTask } from '@/lib/types';
 
 export const MicroTaskManager: React.FC = () => {
@@ -121,16 +121,7 @@ export const MicroTaskManager: React.FC = () => {
   });
 
   // Dynamic Trades List from Database + Custom User-Created Trades
-  const trades: TradeType[] = Array.from(
-    new Set([
-      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 
-      'FABRICATION', 'WATERPROOFING', 'ELECTRICAL', 'PAINTING', 
-      'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
-      ...(state.taskCatalog || []).map(t => t.tradeType),
-      ...(state.contractors || []).map(c => c.tradeType),
-      ...(state.customTrades || []),
-    ])
-  ).filter(Boolean) as TradeType[];
+  const trades = getDynamicTrades(state);
 
   const customTasksList = state.flatTasks.filter(t => t.isCustomClientTask);
 

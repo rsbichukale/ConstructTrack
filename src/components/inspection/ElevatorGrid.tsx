@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Building2, Circle, Filter } from 'lucide-react';
 import { Flat, TradeType } from '@/lib/types';
-import { getAppState, calculateFlatProgress } from '@/lib/dbState';
+import { getAppState, calculateFlatProgress, getDynamicTrades } from '@/lib/dbState';
 
 interface ElevatorGridProps {
   wing: 'B1' | 'B2';
@@ -27,16 +27,8 @@ export const ElevatorGrid: React.FC<ElevatorGridProps> = ({
 
   const [selectedTrade, setSelectedTrade] = useState<TradeType | 'ALL'>('ALL');
 
-  // Dynamic Trades List
-  const trades: TradeType[] = Array.from(
-    new Set([
-      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING',
-      'ELECTRICAL', 'PAINTING', 'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
-      ...(state.taskCatalog || []).map(t => t.tradeType),
-      ...(state.contractors || []).map(c => c.tradeType),
-      ...(state.customTrades || []),
-    ])
-  ).filter(Boolean) as TradeType[];
+  // Dynamic Trades List from Database
+  const trades = getDynamicTrades(state);
 
   return (
     <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">

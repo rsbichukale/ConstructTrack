@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Zap, AlertTriangle, Users, ArrowRight, ShieldAlert, CheckCircle2, TrendingUp, Clock, Layers, ArrowUpRight } from 'lucide-react';
-import { getAppState, saveAppState } from '@/lib/dbState';
+import { getAppState, saveAppState, getDynamicTrades } from '@/lib/dbState';
 import { TradeType } from '@/lib/types';
 
 export const ResourceAllocationCenter: React.FC = () => {
@@ -10,15 +10,7 @@ export const ResourceAllocationCenter: React.FC = () => {
   const [allocationMessage, setAllocationMessage] = useState<string | null>(null);
 
   // Dynamic Trades List from Database
-  const allTrades: TradeType[] = Array.from(
-    new Set([
-      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING',
-      'ELECTRICAL', 'PAINTING', 'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
-      ...(state.taskCatalog || []).map(t => t.tradeType),
-      ...(state.contractors || []).map(c => c.tradeType),
-      ...(state.customTrades || []),
-    ])
-  ).filter(Boolean) as TradeType[];
+  const allTrades = getDynamicTrades(state);
 
   // 1. Calculate Trade Bottlenecks (Where work is waiting / blocked)
   const tradeStats = allTrades.map(trade => {

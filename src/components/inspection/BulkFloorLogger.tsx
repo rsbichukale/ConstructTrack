@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Zap, Check, X, Layers, CheckCircle2 } from 'lucide-react';
 import { TradeType, FlatTaskStatus } from '@/lib/types';
-import { getAppState, updateFlatTaskProgress } from '@/lib/dbState';
+import { getAppState, updateFlatTaskProgress, getDynamicTrades } from '@/lib/dbState';
 
 interface BulkFloorLoggerProps {
   isOpen: boolean;
@@ -50,15 +50,7 @@ export const BulkFloorLogger: React.FC<BulkFloorLoggerProps> = ({
   };
 
   // Dynamic Trades List from Database
-  const trades: TradeType[] = Array.from(
-    new Set([
-      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING',
-      'ELECTRICAL', 'PAINTING', 'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
-      ...(state.taskCatalog || []).map(t => t.tradeType),
-      ...(state.contractors || []).map(c => c.tradeType),
-      ...(state.customTrades || []),
-    ])
-  ).filter(Boolean) as TradeType[];
+  const trades = getDynamicTrades(state);
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
