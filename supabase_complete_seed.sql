@@ -3,6 +3,34 @@
 -- Copy and paste this script into Supabase SQL Editor and click RUN
 -- =========================================================================
 
+-- 0. Dedicated Trades Table
+CREATE TABLE IF NOT EXISTS trades (
+    id SERIAL PRIMARY KEY,
+    trade_code VARCHAR(50) UNIQUE NOT NULL,
+    trade_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE trades ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read-write trades" ON trades FOR ALL USING (true);
+
+INSERT INTO trades (trade_code, trade_name) VALUES
+('BRICK WORK', 'Brickwork & Masonry'),
+('PLASTER WORK', 'Internal Cement Plastering'),
+('POP', 'POP Wall Punning & Gypsum'),
+('TILES', 'Tiles, Flooring & Granite'),
+('PLUMBER', 'Concealed Plumbing & Drainage'),
+('FABRICATION', 'Grills & Railing Fabrication'),
+('WATERPROOFING', 'Wet Area Waterproofing'),
+('ELECTRICAL', 'Electrical Conduit & Wiring'),
+('PAINTING', 'Primer, Putty & Wall Painting'),
+('CARPENTRY', 'Carpentry & Flush Doors'),
+('FALSE CEILING', 'Gypsum Board False Ceiling'),
+('DOOR FITTING', 'Door Frame Installation'),
+('SANITARY', 'Sanitaryware & CP Fittings'),
+('CLEANING', 'Deep Cleaning & Key Handover')
+ON CONFLICT (trade_code) DO NOTHING;
+
 -- 1. Truncate existing tables
 TRUNCATE sites, flats, room_zones, contractors, laborers, task_catalog, flat_tasks, daily_progress_logs, contractor_attendance, department_attendance, daily_work_targets, snagging_items RESTART IDENTITY CASCADE;
 

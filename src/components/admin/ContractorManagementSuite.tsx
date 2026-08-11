@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Building, Users, UserCheck, CheckCircle2, Plus, Filter, Zap, Shield, Phone, Mail, DollarSign, Award, Layers, Trash2, PauseCircle, PlayCircle, AlertCircle } from 'lucide-react';
 import { getAppState, saveAppState } from '@/lib/dbState';
+import { syncTradeToSupabase } from '@/lib/supabaseSync';
 import { Contractor, Laborer, TradeType, SkillLevel, FlatTaskPriority } from '@/lib/types';
 
 export const ContractorManagementSuite: React.FC = () => {
@@ -205,12 +206,13 @@ export const ContractorManagementSuite: React.FC = () => {
         ...state,
         customTrades: [...existingCustom, formattedTrade],
       });
+      syncTradeToSupabase(formattedTrade);
     }
     setTradeType(formattedTrade);
     setNewTradeName('');
     setIsAddingNewTrade(false);
-    setContractorMessage(`New Trade Category "${formattedTrade}" added successfully!`);
-    setTimeout(() => setContractorMessage(null), 3000);
+    setContractorMessage(`New Trade Category "${formattedTrade}" added & synced to Supabase database!`);
+    setTimeout(() => setContractorMessage(null), 3500);
   };
 
   return (

@@ -435,3 +435,16 @@ export async function seedFullProjectDataToSupabase(state: AppState): Promise<{ 
     return { success: false, message: error.message || 'Database Seeding Failed.' };
   }
 }
+
+export async function syncTradeToSupabase(tradeName: string) {
+  if (!isSupabaseConfigured || !supabase) return;
+  try {
+    const formatted = tradeName.trim().toUpperCase();
+    await supabase.from('trades').upsert({
+      trade_code: formatted,
+      trade_name: formatted,
+    }, { onConflict: 'trade_code' });
+  } catch (error) {
+    console.warn('[Supabase Sync] Trades sync notice:', error);
+  }
+}
