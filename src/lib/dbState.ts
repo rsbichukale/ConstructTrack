@@ -21,6 +21,7 @@ export interface AppState {
   snaggingItems: SnaggingItem[];
   departmentAttendance: DepartmentLaborAttendance[];
   adminCredentials: AdminUserCredentials;
+  customTrades?: string[];
 }
 
 let currentState: AppState | null = null;

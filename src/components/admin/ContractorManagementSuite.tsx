@@ -169,7 +169,49 @@ export const ContractorManagementSuite: React.FC = () => {
     return l.contractorId === laborFilterContractor;
   });
 
-  const trades: TradeType[] = ['BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING'];
+  // Dynamic Trades List from Database + Custom User-Created Trades
+  const trades: TradeType[] = Array.from(
+    new Set([
+      'BRICK WORK',
+      'PLASTER WORK',
+      'POP',
+      'TILES',
+      'PLUMBER',
+      'FABRICATION',
+      'WATERPROOFING',
+      'ELECTRICAL',
+      'PAINTING',
+      'CARPENTRY',
+      'FALSE CEILING',
+      'DOOR FITTING',
+      'SANITARY',
+      'CLEANING',
+      ...(state.taskCatalog || []).map(t => t.tradeType),
+      ...(state.contractors || []).map(c => c.tradeType),
+      ...(state.customTrades || []),
+    ])
+  ).filter(Boolean) as TradeType[];
+
+  // Custom Trade Creation State
+  const [isAddingNewTrade, setIsAddingNewTrade] = useState(false);
+  const [newTradeName, setNewTradeName] = useState('');
+
+  const handleCreateCustomTrade = () => {
+    if (!newTradeName.trim()) return;
+    const formattedTrade = newTradeName.trim().toUpperCase() as TradeType;
+    const existingCustom = state.customTrades || [];
+    if (!existingCustom.includes(formattedTrade)) {
+      saveAppState({
+        ...state,
+        customTrades: [...existingCustom, formattedTrade],
+      });
+    }
+    setTradeType(formattedTrade);
+    setNewTradeName('');
+    setIsAddingNewTrade(false);
+    setContractorMessage(`New Trade Category "${formattedTrade}" added successfully!`);
+    setTimeout(() => setContractorMessage(null), 3000);
+  };
 
   return (
     <div className="space-y-6">
@@ -247,14 +289,44 @@ export const ContractorManagementSuite: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400">Trade Category</label>
-                  <select
-                    value={tradeType}
-                    onChange={(e) => setTradeType(e.target.value as TradeType)}
-                    className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white"
-                  >
-                    {trades.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs text-slate-400">Trade Category</label>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingNewTrade(!isAddingNewTrade)}
+                      className="text-[11px] text-sky-400 hover:text-sky-300 font-semibold flex items-center space-x-1"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>{isAddingNewTrade ? 'Cancel' : '+ New Trade'}</span>
+                    </button>
+                  </div>
+
+                  {isAddingNewTrade ? (
+                    <div className="flex items-center space-x-1.5 mt-1">
+                      <input
+                        type="text"
+                        placeholder="e.g. SOLAR, HVAC, FIRE SAFETY"
+                        value={newTradeName}
+                        onChange={(e) => setNewTradeName(e.target.value)}
+                        className="w-full bg-slate-950 border border-sky-500/50 rounded-xl p-2 text-xs text-white uppercase focus:ring-1 focus:ring-sky-400 outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCreateCustomTrade}
+                        className="bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs px-3 py-2 rounded-xl transition shrink-0"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={tradeType}
+                      onChange={(e) => setTradeType(e.target.value as TradeType)}
+                      className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white"
+                    >
+                      {trades.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs text-slate-400">Contact Person</label>

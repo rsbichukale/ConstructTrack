@@ -120,11 +120,17 @@ export const MicroTaskManager: React.FC = () => {
     return true;
   });
 
-  const trades: TradeType[] = [
-    'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 
-    'FABRICATION', 'WATERPROOFING', 'ELECTRICAL', 'PAINTING', 
-    'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING'
-  ];
+  // Dynamic Trades List from Database + Custom User-Created Trades
+  const trades: TradeType[] = Array.from(
+    new Set([
+      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 
+      'FABRICATION', 'WATERPROOFING', 'ELECTRICAL', 'PAINTING', 
+      'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
+      ...(state.taskCatalog || []).map(t => t.tradeType),
+      ...(state.contractors || []).map(c => c.tradeType),
+      ...(state.customTrades || []),
+    ])
+  ).filter(Boolean) as TradeType[];
 
   const customTasksList = state.flatTasks.filter(t => t.isCustomClientTask);
 
