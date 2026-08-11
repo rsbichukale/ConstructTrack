@@ -9,8 +9,19 @@ export const ResourceAllocationCenter: React.FC = () => {
   const state = getAppState();
   const [allocationMessage, setAllocationMessage] = useState<string | null>(null);
 
+  // Dynamic Trades List from Database
+  const allTrades: TradeType[] = Array.from(
+    new Set([
+      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING',
+      'ELECTRICAL', 'PAINTING', 'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
+      ...(state.taskCatalog || []).map(t => t.tradeType),
+      ...(state.contractors || []).map(c => c.tradeType),
+      ...(state.customTrades || []),
+    ])
+  ).filter(Boolean) as TradeType[];
+
   // 1. Calculate Trade Bottlenecks (Where work is waiting / blocked)
-  const tradeStats = (['BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING'] as TradeType[]).map(trade => {
+  const tradeStats = allTrades.map(trade => {
     const catalogIds = state.taskCatalog.filter(c => c.tradeType === trade).map(c => c.id);
     const tasks = state.flatTasks.filter(t => catalogIds.includes(t.taskCatalogId));
     
