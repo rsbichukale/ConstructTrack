@@ -188,15 +188,12 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Database & Cloud Connection Status Badge */}
           <div
-            className={`hidden sm:flex items-center space-x-1 px-2.5 py-1 rounded-xl text-xs font-bold border ${
-              isSupabaseConfigured
-                ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800'
-                : 'bg-slate-900 text-sky-400 border-slate-800'
-            }`}
-            title={isSupabaseConfigured ? 'Supabase PostgreSQL Cloud DB Connected' : 'Local PWA Database Mode'}
+            className="hidden sm:flex items-center space-x-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-800 shadow-sm"
+            title="100% Direct Supabase PostgreSQL Cloud Database Mode Active"
           >
-            <Database className="w-3.5 h-3.5" />
-            <span>{isSupabaseConfigured ? 'Supabase Cloud DB' : 'Local DB (PWA)'}</span>
+            <Database className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Supabase Cloud PostgreSQL</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>
           </div>
 
           {/* User Profile & Security Settings */}
