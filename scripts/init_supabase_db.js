@@ -60,29 +60,38 @@ async function initSupabaseDatabase() {
     // 4. Seed Contractors
     console.log('🌱 Seeding Contractors...');
     const contractors = [
-      [1, 'Apex Masonry Works', 'BRICK WORK', 'Ramesh Patel', '+91 9876543210', 0, 'apex@masonry.com', 'B1'],
-      [2, 'BuildPro Plastering Co.', 'PLASTER WORK', 'Suresh Kumar', '+91 9876543211', 0, 'buildpro@plaster.com', 'B1'],
-      [3, 'Royal POP Designers', 'POP', 'Vijay Sharma', '+91 9876543212', 0, 'royal@pop.com', 'ALL'],
-      [4, 'Granite & Tile Masters', 'TILES', 'Anil Gupta', '+91 9876543213', 0, 'granite@tiles.com', 'ALL'],
-      [5, 'FlowTech Plumbing Solutions', 'PLUMBER', 'Prakash Rao', '+91 9876543214', 0, 'flowtech@plumber.com', 'B2'],
-      [6, 'ShieldProof Waterproofers', 'WATERPROOFING', 'Sunil Mehta', '+91 9876543215', 0, 'shield@waterproof.com', 'ALL'],
-      [7, 'SteelGrid Fabricators', 'FABRICATION', 'Dinesh Carpenter', '+91 9876543216', 0, 'steelgrid@fab.com', 'ALL'],
-      [8, 'PowerLine Electrical Works', 'ELECTRICAL', 'Ashok Electricwala', '+91 9876543217', 0, 'powerline@elec.com', 'ALL'],
-      [9, 'ColorKraft Painters', 'PAINTING', 'Rakesh Painter', '+91 9876543218', 0, 'colorkraft@paint.com', 'ALL'],
-      [10, 'WoodCraft Interiors', 'CARPENTRY', 'Mohan Carpenter', '+91 9876543219', 0, 'woodcraft@carp.com', 'ALL'],
-      [11, 'CeilPro False Ceiling', 'FALSE CEILING', 'Ganesh Ceiling', '+91 9876543220', 0, 'ceilpro@fc.com', 'ALL'],
-      [12, 'DoorMaster Fittings', 'DOOR FITTING', 'Kamlesh Door', '+91 9876543221', 0, 'doormaster@fit.com', 'ALL'],
-      [13, 'SaniFlow CP Fittings', 'SANITARY', 'Bharat Sanitary', '+91 9876543222', 0, 'saniflow@cp.com', 'ALL'],
-      [14, 'CleanSite Services', 'CLEANING', 'Suman Clean', '+91 9876543223', 0, 'cleansite@srv.com', 'ALL'],
+      [1, 'Apex Masonry Works', ['BRICK WORK'], 'Ramesh Patel', '+91 9876543210', 0, 'apex@masonry.com', 'B1'],
+      [2, 'BuildPro Plastering Co.', ['PLASTER WORK'], 'Suresh Kumar', '+91 9876543211', 0, 'buildpro@plaster.com', 'B1'],
+      [3, 'Royal POP Designers', ['POP'], 'Vijay Sharma', '+91 9876543212', 0, 'royal@pop.com', 'ALL'],
+      [4, 'Granite & Tile Masters', ['TILES'], 'Anil Gupta', '+91 9876543213', 0, 'granite@tiles.com', 'ALL'],
+      [5, 'FlowTech Plumbing Solutions', ['PLUMBER'], 'Prakash Rao', '+91 9876543214', 0, 'flowtech@plumber.com', 'B2'],
+      [6, 'ShieldProof Waterproofers', ['WATERPROOFING'], 'Sunil Mehta', '+91 9876543215', 0, 'shield@waterproof.com', 'ALL'],
+      [7, 'SteelGrid Fabricators', ['FABRICATION'], 'Dinesh Carpenter', '+91 9876543216', 0, 'steelgrid@fab.com', 'ALL'],
+      [8, 'PowerLine Electrical Works', ['ELECTRICAL'], 'Ashok Electricwala', '+91 9876543217', 0, 'powerline@elec.com', 'ALL'],
+      [9, 'ColorKraft Painters', ['PAINTING'], 'Rakesh Painter', '+91 9876543218', 0, 'colorkraft@paint.com', 'ALL'],
+      [10, 'WoodCraft Interiors', ['CARPENTRY'], 'Mohan Carpenter', '+91 9876543219', 0, 'woodcraft@carp.com', 'ALL'],
+      [11, 'CeilPro False Ceiling', ['FALSE CEILING'], 'Ganesh Ceiling', '+91 9876543220', 0, 'ceilpro@fc.com', 'ALL'],
+      [12, 'DoorMaster Fittings', ['DOOR FITTING'], 'Kamlesh Door', '+91 9876543221', 0, 'doormaster@fit.com', 'ALL'],
+      [13, 'SaniFlow CP Fittings', ['SANITARY'], 'Bharat Sanitary', '+91 9876543222', 0, 'saniflow@cp.com', 'ALL'],
+      [14, 'CleanSite Services', ['CLEANING'], 'Suman Clean', '+91 9876543223', 0, 'cleansite@srv.com', 'ALL'],
     ];
 
-    for (const [id, comp, trade, person, phone, rate, email, scope] of contractors) {
+    for (const [id, comp, trades, person, phone, rate, email, scope] of contractors) {
       await client.query(
-        `INSERT INTO contractors (id, company_name, trade_type, contact_person, phone, rate_per_unit, email, wing_scope)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO contractors (id, company_name, contact_person, phone, rate_per_unit, email, wing_scope)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          ON CONFLICT (id) DO UPDATE SET company_name = EXCLUDED.company_name, phone = EXCLUDED.phone;`,
-        [id, comp, trade, person, phone, rate, email, scope]
+        [id, comp, person, phone, rate, email, scope]
       );
+
+      for (const trade of trades) {
+        await client.query(
+         `INSERT INTO contractor_trades (contractor_id, trade_type)
+          VALUES ($1, $2)
+          ON CONFLICT (contractor_id, trade_type) DO NOTHING;`,
+         [id, trade]
+        );
+      }
     }
 
     // 5. Seed Laborers

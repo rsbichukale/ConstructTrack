@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS room_zones (
 CREATE TABLE IF NOT EXISTS contractors (
     id SERIAL PRIMARY KEY,
     company_name VARCHAR(100) NOT NULL,
-    trade_type VARCHAR(50) NOT NULL,
     contact_person VARCHAR(100),
     phone VARCHAR(30) UNIQUE NOT NULL,
     rate_per_unit NUMERIC(10,2) DEFAULT 0,
@@ -47,7 +46,16 @@ CREATE TABLE IF NOT EXISTS contractors (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 5. Laborers Registry Table (Contractor & In-House Department Labours)
+-- 5. Contractor ↔ Trades Mapping (Many-to-Many)
+CREATE TABLE IF NOT EXISTS contractor_trades (
+    id SERIAL PRIMARY KEY,
+    contractor_id INT REFERENCES contractors(id) ON DELETE CASCADE,
+    trade_type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(contractor_id, trade_type)
+);
+
+-- 6. Laborers Registry Table (Contractor & In-House Department Labours)
 CREATE TABLE IF NOT EXISTS laborers (
     id SERIAL PRIMARY KEY,
     contractor_id INT REFERENCES contractors(id) ON DELETE SET NULL,
@@ -181,6 +189,7 @@ ALTER TABLE sites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE flats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE room_zones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contractors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contractor_trades ENABLE ROW LEVEL SECURITY;
 ALTER TABLE laborers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_catalog ENABLE ROW LEVEL SECURITY;
 ALTER TABLE flat_tasks ENABLE ROW LEVEL SECURITY;
@@ -196,6 +205,7 @@ CREATE POLICY "Allow public read-write sites" ON sites FOR ALL USING (true);
 CREATE POLICY "Allow public read-write flats" ON flats FOR ALL USING (true);
 CREATE POLICY "Allow public read-write room_zones" ON room_zones FOR ALL USING (true);
 CREATE POLICY "Allow public read-write contractors" ON contractors FOR ALL USING (true);
+CREATE POLICY "Allow public read-write contractor_trades" ON contractor_trades FOR ALL USING (true);
 CREATE POLICY "Allow public read-write laborers" ON laborers FOR ALL USING (true);
 CREATE POLICY "Allow public read-write task_catalog" ON task_catalog FOR ALL USING (true);
 CREATE POLICY "Allow public read-write flat_tasks" ON flat_tasks FOR ALL USING (true);
@@ -232,7 +242,7 @@ CREATE OR REPLACE VIEW vw_contractor_performance_matrix AS
 SELECT 
     c.id AS contractor_id,
     c.company_name,
-    c.trade_type,
+    COALESCE(STRING_AGG(DISTINCT ct.trade_type, ', '), 'UNASSIGNED') AS trade_types,
     COUNT(ft.id) AS total_assigned_tasks,
     COUNT(CASE WHEN ft.status = 'APPROVED' THEN 1 END) AS completed_tasks,
     COUNT(CASE WHEN ft.status = 'REWORK' THEN 1 END) AS rework_tasks,
@@ -244,9 +254,10 @@ SELECT
         ELSE 0 END, 1
     ) AS completion_rate_pct
 FROM contractors c
+LEFT JOIN contractor_trades ct ON c.id = ct.contractor_id
 LEFT JOIN flat_tasks ft ON c.id = ft.assigned_contractor_id
 LEFT JOIN snagging_items si ON c.id = si.assigned_contractor_id AND si.status = 'OPEN'
-GROUP BY c.id, c.company_name, c.trade_type;
+GROUP BY c.id, c.company_name;
 
 -- 3. Daily Progress Summary View
 CREATE OR REPLACE VIEW vw_daily_site_dpr AS
@@ -260,4 +271,3 @@ FROM daily_progress_logs dpl
 JOIN flat_tasks ft ON dpl.flat_task_id = ft.id
 GROUP BY dpl.date_logged::DATE
 ORDER BY report_date DESC;
-

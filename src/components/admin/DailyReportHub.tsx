@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Calendar, Users, FileText, CheckCircle2, Share2, Printer, Download, Building, Send, Clock, Camera, Target, CheckSquare, Sun, Moon, AlertTriangle, Plus, ShieldCheck } from 'lucide-react';
 import { getAppState, saveAppState, getDynamicTrades, addDailyWorkTarget, verifyDailyWorkTarget, saveDepartmentLaborAttendance } from '@/lib/dbState';
 import { ContractorAttendance, TradeType, DailyWorkTarget, DepartmentLaborAttendance } from '@/lib/types';
+import { getContractorTradeLabel } from '@/lib/contractorTrades';
 
 export const DailyReportHub: React.FC = () => {
   const state = getAppState();
@@ -180,11 +181,11 @@ export const DailyReportHub: React.FC = () => {
     state.contractors.forEach(c => {
       const att = selectedAttendance.find(a => a.contractorId === c.id);
       if (att && att.isPresent === false) {
-        text += `🔴 *${c.companyName}* (${c.tradeType}): ABSENT — Reason: ${att.absenceReason || 'Not Reported'}\n`;
+        text += `🔴 *${c.companyName}* (${getContractorTradeLabel(c)}): ABSENT — Reason: ${att.absenceReason || 'Not Reported'}\n`;
       } else if (att) {
-        text += `🟢 *${c.companyName}* (${c.tradeType}): ${att.masonsCount + att.helpersCount} Present (${att.masonsCount} Masons, ${att.helpersCount} Helpers)\n`;
+        text += `🟢 *${c.companyName}* (${getContractorTradeLabel(c)}): ${att.masonsCount + att.helpersCount} Present (${att.masonsCount} Masons, ${att.helpersCount} Helpers)\n`;
       } else {
-        text += `⚪ *${c.companyName}* (${c.tradeType}): Attendance Not Logged\n`;
+        text += `⚪ *${c.companyName}* (${getContractorTradeLabel(c)}): Attendance Not Logged\n`;
       }
     });
 
@@ -280,7 +281,7 @@ export const DailyReportHub: React.FC = () => {
                 >
                   {state.contractors.map(c => (
                     <option key={c.id} value={c.id}>
-                      {c.companyName} ({c.tradeType})
+                      {c.companyName} ({getContractorTradeLabel(c)})
                     </option>
                   ))}
                 </select>
@@ -479,7 +480,7 @@ export const DailyReportHub: React.FC = () => {
                 >
                   {state.contractors.map(c => (
                     <option key={c.id} value={c.id}>
-                      {c.companyName} ({c.tradeType})
+                      {c.companyName} ({getContractorTradeLabel(c)})
                     </option>
                   ))}
                 </select>

@@ -1,4 +1,5 @@
 import { Site, RoomZone, TaskCatalogItem, Contractor, Flat, FlatTask, DailyWorkTarget, ExecutionPhase } from './types';
+import { contractorHasTrade } from './contractorTrades';
 
 export const INITIAL_SITES: Site[] = [
   { id: 1, name: 'Site 1 (Tower Alpha)' },
@@ -20,21 +21,21 @@ export const INITIAL_ROOM_ZONES: RoomZone[] = [
 ];
 
 export const INITIAL_CONTRACTORS: Contractor[] = [
-  { id: 1, companyName: 'Apex Masonry Works', tradeType: 'BRICK WORK', contactPerson: 'Ramesh Patel', phone: '+91 9876543210', ratePerUnit: 0, email: 'apex@masonry.com', status: 'ACTIVE', wingScope: 'B1' },
-  { id: 2, companyName: 'BuildPro Plastering Co.', tradeType: 'PLASTER WORK', contactPerson: 'Suresh Kumar', phone: '+91 9876543211', ratePerUnit: 0, email: 'buildpro@plaster.com', status: 'ACTIVE', wingScope: 'B1' },
-  { id: 3, companyName: 'Royal POP Designers', tradeType: 'POP', contactPerson: 'Vijay Sharma', phone: '+91 9876543212', ratePerUnit: 0, email: 'royal@pop.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 4, companyName: 'Granite & Tile Masters', tradeType: 'TILES', contactPerson: 'Anil Gupta', phone: '+91 9876543213', ratePerUnit: 0, email: 'granite@tiles.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 5, companyName: 'FlowTech Plumbing Solutions', tradeType: 'PLUMBER', contactPerson: 'Prakash Rao', phone: '+91 9876543214', ratePerUnit: 0, email: 'flowtech@plumber.com', status: 'ACTIVE', wingScope: 'B2' },
-  { id: 6, companyName: 'StrongHold Fabricators', tradeType: 'FABRICATION', contactPerson: 'Dinesh Joshi', phone: '+91 9876543215', ratePerUnit: 0, email: 'stronghold@fab.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 7, companyName: 'ShieldPro Waterproofing', tradeType: 'WATERPROOFING', contactPerson: 'Mahesh Verma', phone: '+91 9876543216', ratePerUnit: 0, email: 'shieldpro@wp.com', status: 'ACTIVE', wingScope: 'B2' },
+  { id: 1, companyName: 'Apex Masonry Works', tradeTypes: ['BRICK WORK'], tradeType: 'BRICK WORK', contactPerson: 'Ramesh Patel', phone: '+91 9876543210', ratePerUnit: 0, email: 'apex@masonry.com', status: 'ACTIVE', wingScope: 'B1' },
+  { id: 2, companyName: 'BuildPro Plastering Co.', tradeTypes: ['PLASTER WORK'], tradeType: 'PLASTER WORK', contactPerson: 'Suresh Kumar', phone: '+91 9876543211', ratePerUnit: 0, email: 'buildpro@plaster.com', status: 'ACTIVE', wingScope: 'B1' },
+  { id: 3, companyName: 'Royal POP Designers', tradeTypes: ['POP'], tradeType: 'POP', contactPerson: 'Vijay Sharma', phone: '+91 9876543212', ratePerUnit: 0, email: 'royal@pop.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 4, companyName: 'Granite & Tile Masters', tradeTypes: ['TILES'], tradeType: 'TILES', contactPerson: 'Anil Gupta', phone: '+91 9876543213', ratePerUnit: 0, email: 'granite@tiles.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 5, companyName: 'FlowTech Plumbing Solutions', tradeTypes: ['PLUMBER'], tradeType: 'PLUMBER', contactPerson: 'Prakash Rao', phone: '+91 9876543214', ratePerUnit: 0, email: 'flowtech@plumber.com', status: 'ACTIVE', wingScope: 'B2' },
+  { id: 6, companyName: 'StrongHold Fabricators', tradeTypes: ['FABRICATION'], tradeType: 'FABRICATION', contactPerson: 'Dinesh Joshi', phone: '+91 9876543215', ratePerUnit: 0, email: 'stronghold@fab.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 7, companyName: 'ShieldPro Waterproofing', tradeTypes: ['WATERPROOFING'], tradeType: 'WATERPROOFING', contactPerson: 'Mahesh Verma', phone: '+91 9876543216', ratePerUnit: 0, email: 'shieldpro@wp.com', status: 'ACTIVE', wingScope: 'B2' },
   // New Trades
-  { id: 8, companyName: 'PowerLine Electrical Works', tradeType: 'ELECTRICAL', contactPerson: 'Ashok Electricwala', phone: '+91 9876543217', ratePerUnit: 0, email: 'powerline@elec.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 9, companyName: 'ColorKraft Painters', tradeType: 'PAINTING', contactPerson: 'Rakesh Painter', phone: '+91 9876543218', ratePerUnit: 0, email: 'colorkraft@paint.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 10, companyName: 'WoodCraft Interiors', tradeType: 'CARPENTRY', contactPerson: 'Mohan Carpenter', phone: '+91 9876543219', ratePerUnit: 0, email: 'woodcraft@carp.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 11, companyName: 'CeilPro False Ceiling', tradeType: 'FALSE CEILING', contactPerson: 'Ganesh Ceiling', phone: '+91 9876543220', ratePerUnit: 0, email: 'ceilpro@fc.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 12, companyName: 'DoorMaster Fittings', tradeType: 'DOOR FITTING', contactPerson: 'Kamlesh Door', phone: '+91 9876543221', ratePerUnit: 0, email: 'doormaster@fit.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 13, companyName: 'SaniFlow CP Fittings', tradeType: 'SANITARY', contactPerson: 'Bharat Sanitary', phone: '+91 9876543222', ratePerUnit: 0, email: 'saniflow@cp.com', status: 'ACTIVE', wingScope: 'ALL' },
-  { id: 14, companyName: 'CleanSite Services', tradeType: 'CLEANING', contactPerson: 'Suman Clean', phone: '+91 9876543223', ratePerUnit: 0, email: 'cleansite@srv.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 8, companyName: 'PowerLine Electrical Works', tradeTypes: ['ELECTRICAL'], tradeType: 'ELECTRICAL', contactPerson: 'Ashok Electricwala', phone: '+91 9876543217', ratePerUnit: 0, email: 'powerline@elec.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 9, companyName: 'ColorKraft Painters', tradeTypes: ['PAINTING'], tradeType: 'PAINTING', contactPerson: 'Rakesh Painter', phone: '+91 9876543218', ratePerUnit: 0, email: 'colorkraft@paint.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 10, companyName: 'WoodCraft Interiors', tradeTypes: ['CARPENTRY'], tradeType: 'CARPENTRY', contactPerson: 'Mohan Carpenter', phone: '+91 9876543219', ratePerUnit: 0, email: 'woodcraft@carp.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 11, companyName: 'CeilPro False Ceiling', tradeTypes: ['FALSE CEILING'], tradeType: 'FALSE CEILING', contactPerson: 'Ganesh Ceiling', phone: '+91 9876543220', ratePerUnit: 0, email: 'ceilpro@fc.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 12, companyName: 'DoorMaster Fittings', tradeTypes: ['DOOR FITTING'], tradeType: 'DOOR FITTING', contactPerson: 'Kamlesh Door', phone: '+91 9876543221', ratePerUnit: 0, email: 'doormaster@fit.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 13, companyName: 'SaniFlow CP Fittings', tradeTypes: ['SANITARY'], tradeType: 'SANITARY', contactPerson: 'Bharat Sanitary', phone: '+91 9876543222', ratePerUnit: 0, email: 'saniflow@cp.com', status: 'ACTIVE', wingScope: 'ALL' },
+  { id: 14, companyName: 'CleanSite Services', tradeTypes: ['CLEANING'], tradeType: 'CLEANING', contactPerson: 'Suman Clean', phone: '+91 9876543223', ratePerUnit: 0, email: 'cleansite@srv.com', status: 'ACTIVE', wingScope: 'ALL' },
 ];
 
 export const INITIAL_LABORERS: any[] = [
@@ -266,7 +267,7 @@ export function generateInitialFlatTasks(flats: Flat[]): FlatTask[] {
         return; // Skip 3BHK-only tasks for 2BHK units
       }
 
-      const contractor = INITIAL_CONTRACTORS.find(c => c.tradeType === taskCat.tradeType);
+      const contractor = INITIAL_CONTRACTORS.find(c => contractorHasTrade(c, taskCat.tradeType));
 
       flatTasks.push({
         id: taskIdCounter++,
@@ -310,4 +311,3 @@ export const INITIAL_DAILY_TARGETS: DailyWorkTarget[] = [
     status: 'ASSIGNED',
   },
 ];
-

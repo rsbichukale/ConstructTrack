@@ -2,6 +2,7 @@ import { Site, Flat, RoomZone, TaskCatalogItem, FlatTask, Contractor, Laborer, D
 import { INITIAL_SITES, INITIAL_ROOM_ZONES, INITIAL_CONTRACTORS, INITIAL_LABORERS, INITIAL_TASK_CATALOG, INITIAL_DAILY_TARGETS, INITIAL_EXECUTION_PHASES, generateInitialFlats, generateInitialFlatTasks } from './seedData';
 import { saveOfflineLog } from '@/lib/offlineSync';
 import { syncTaskToSupabase, syncDailyProgressLogToSupabase, syncDailyWorkTargetToSupabase, syncSnaggingItemToSupabase, fetchStateFromSupabase, seedFullProjectDataToSupabase } from './supabaseSync';
+import { getContractorTradeTypes } from './contractorTrades';
 
 const STORAGE_KEY = 'construct_track_state_v14';
 
@@ -135,7 +136,7 @@ export function getDynamicTrades(state?: AppState): TradeType[] {
   const tradeCodesFromDb = (st.trades || []).map(t => t.tradeCode);
   const tradeNamesFromDb = (st.trades || []).map(t => t.tradeName);
   const tradeFromCatalog = (st.taskCatalog || []).map(t => t.tradeType);
-  const tradeFromContractors = (st.contractors || []).map(c => c.tradeType);
+  const tradeFromContractors = (st.contractors || []).flatMap(c => getContractorTradeTypes(c));
   const customTrades = st.customTrades || [];
 
   const masterTradeTypes: TradeType[] = [
@@ -581,5 +582,4 @@ export function updateAdminCredentials(newCreds: Partial<AdminUserCredentials>) 
 
   return updated;
 }
-
 

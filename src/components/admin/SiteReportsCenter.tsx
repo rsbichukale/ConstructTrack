@@ -28,6 +28,7 @@ import { TradeType } from '@/lib/types';
 import { SCurveChart } from './SCurveChart';
 import { FloorHeatmapGrid } from './FloorHeatmapGrid';
 import { downloadDprPdf, shareDprWhatsAppAndPdf } from '@/lib/pdfGenerator';
+import { getContractorPrimaryTrade, getContractorTradeLabel } from '@/lib/contractorTrades';
 
 export const SiteReportsCenter: React.FC = () => {
   const state = getAppState();
@@ -138,7 +139,7 @@ export const SiteReportsCenter: React.FC = () => {
         const att = attendanceForDate.find(a => a.contractorId === c.id);
         const isAbs = att && att.isPresent === false;
 
-        text += `${idx + 1}. *${c.companyName}* (${c.tradeType})\n`;
+        text += `${idx + 1}. *${c.companyName}* (${getContractorTradeLabel(c)})\n`;
         if (isAbs) {
           text += `   • *Attendance:* 🔴 ABSENT — *Reason:* ${att.absenceReason || 'Not Reported'}\n\n`;
           return;
@@ -470,13 +471,13 @@ export const SiteReportsCenter: React.FC = () => {
                         <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm ${
                           isAbsent ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                         }`}>
-                          {c.tradeType.substring(0, 2)}
+                          {(getContractorPrimaryTrade(c) || 'NA').substring(0, 2)}
                         </div>
                         <div>
                           <div className="flex items-center space-x-2">
                             <h4 className="text-lg font-black text-white">{c.companyName}</h4>
                             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
-                              {c.tradeType}
+                              {getContractorTradeLabel(c)}
                             </span>
                           </div>
                           <p className="text-xs text-slate-400">Contact: {c.contactPerson} ({c.phone})</p>
@@ -659,7 +660,7 @@ export const SiteReportsCenter: React.FC = () => {
                           <span className="text-xs font-mono font-bold text-slate-500">#{idx + 1}</span>
                           <h4 className="text-base font-bold text-white">{c.companyName}</h4>
                         </div>
-                        <p className="text-xs text-cyan-400 font-semibold">{c.tradeType} • Wing Scope: {c.wingScope || 'ALL'}</p>
+                        <p className="text-xs text-cyan-400 font-semibold">{getContractorTradeLabel(c)} • Wing Scope: {c.wingScope || 'ALL'}</p>
                       </div>
 
                       <span className={`px-2.5 py-1 text-[10px] font-extrabold rounded-lg border uppercase tracking-wider ${ratingBadgeClass}`}>
@@ -824,7 +825,7 @@ export const SiteReportsCenter: React.FC = () => {
                       <tr key={c.id} className="hover:bg-slate-950/50 print:hover:bg-transparent">
                         <td className="p-3 font-extrabold text-white print:text-black">
                           <div>{c.companyName}</div>
-                          <div className="text-[11px] text-sky-400 font-semibold print:text-black">{c.tradeType}</div>
+                          <div className="text-[11px] text-sky-400 font-semibold print:text-black">{getContractorTradeLabel(c)}</div>
                         </td>
                         <td className="p-3 text-center font-mono font-bold text-emerald-400 print:text-black">{masons}</td>
                         <td className="p-3 text-center font-mono font-bold text-amber-400 print:text-black">{helpers}</td>
@@ -851,7 +852,7 @@ export const SiteReportsCenter: React.FC = () => {
                               })}
                             </div>
                           ) : (
-                            <span className="text-slate-500 italic">General {c.tradeType} work across active floors in Wings B1 & B2</span>
+                            <span className="text-slate-500 italic">General {getContractorTradeLabel(c)} work across active floors in Wings B1 & B2</span>
                           )}
                         </td>
                       </tr>

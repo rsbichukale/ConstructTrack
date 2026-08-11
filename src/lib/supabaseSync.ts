@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { AppState } from './dbState';
 import { INITIAL_SITES, INITIAL_ROOM_ZONES, INITIAL_CONTRACTORS, INITIAL_LABORERS, INITIAL_TASK_CATALOG, generateInitialFlats, generateInitialFlatTasks } from './seedData';
+import { getContractorTradeTypes } from './contractorTrades';
 
 export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null> {
   if (!isSupabaseConfigured || !supabase) {
@@ -14,6 +15,7 @@ export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null
       taskCatalogRes,
       flatsRes,
       contractorsRes,
+      contractorTradesRes,
       laborersRes,
       flatTasksRes,
       dailyLogsRes,
@@ -31,6 +33,7 @@ export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null
       supabase.from('task_catalog').select('*'),
       supabase.from('flats').select('*'),
       supabase.from('contractors').select('*'),
+      supabase.from('contractor_trades').select('*'),
       supabase.from('laborers').select('*'),
       supabase.from('flat_tasks').select('*'),
       supabase.from('daily_progress_logs').select('*').order('date_logged', { ascending: false }),
@@ -49,6 +52,7 @@ export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null
     const taskCatalog = taskCatalogRes.data;
     const flats = flatsRes.data;
     const contractors = contractorsRes.data;
+    const contractorTrades = contractorTradesRes.data;
     const laborers = laborersRes.data;
     const flatTasks = flatTasksRes.data;
     const dailyLogs = dailyLogsRes.data;
@@ -130,10 +134,18 @@ export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null
     }
 
     if (contractors && contractors.length > 0) {
+      const tradesByContractor = (contractorTrades || []).reduce((acc, row) => {
+        const contractorId = row.contractor_id;
+        if (!acc[contractorId]) acc[contractorId] = [];
+        acc[contractorId].push(row.trade_type);
+        return acc;
+      }, {} as Record<number, string[]>);
+
       result.contractors = contractors.map(c => ({
         id: c.id,
         companyName: c.company_name,
-        tradeType: c.trade_type,
+        tradeTypes: (tradesByContractor[c.id] || (c.trade_type ? [c.trade_type] : [])) as AppState['contractors'][number]['tradeTypes'],
+        tradeType: c.trade_type || tradesByContractor[c.id]?.[0],
         contactPerson: c.contact_person,
         phone: c.phone,
         ratePerUnit: parseFloat(c.rate_per_unit || 0),
@@ -413,7 +425,6 @@ export async function seedFullProjectDataToSupabase(state: AppState): Promise<{ 
     await supabase.from('contractors').upsert(contractorsToSeed.map(c => ({
       id: c.id,
       company_name: c.companyName,
-      trade_type: c.tradeType,
       contact_person: c.contactPerson,
       phone: c.phone,
       rate_per_unit: c.ratePerUnit || 0,
@@ -421,6 +432,16 @@ export async function seedFullProjectDataToSupabase(state: AppState): Promise<{ 
       status: c.status || 'ACTIVE',
       wing_scope: c.wingScope || 'ALL',
     })));
+
+    await supabase.from('contractor_trades').upsert(
+      contractorsToSeed.flatMap(c =>
+        getContractorTradeTypes(c).map(trade => ({
+          contractor_id: c.id,
+          trade_type: trade,
+        }))
+      ),
+      { onConflict: 'contractor_id,trade_type' }
+    );
 
     // 5. Seed Laborers
     await supabase.from('laborers').upsert(laborersToSeed.map(l => ({

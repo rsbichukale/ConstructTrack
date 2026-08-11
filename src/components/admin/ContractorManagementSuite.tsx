@@ -3,6 +3,7 @@ import { Building, Users, UserCheck, CheckCircle2, Plus, Filter, Zap, Shield, Ph
 import { getAppState, saveAppState, getDynamicTrades } from '@/lib/dbState';
 import { syncTradeToSupabase } from '@/lib/supabaseSync';
 import { Contractor, Laborer, TradeType, SkillLevel, FlatTaskPriority } from '@/lib/types';
+import { contractorHasTrade, getContractorTradeLabel, getContractorTradeTypes } from '@/lib/contractorTrades';
 
 export const ContractorManagementSuite: React.FC = () => {
   const state = getAppState();
@@ -12,7 +13,7 @@ export const ContractorManagementSuite: React.FC = () => {
   // Contractor Form State
   const [isAddingContractor, setIsAddingContractor] = useState(false);
   const [companyName, setCompanyName] = useState('');
-  const [tradeType, setTradeType] = useState<TradeType>('BRICK WORK');
+  const [selectedTradeTypes, setSelectedTradeTypes] = useState<TradeType[]>(['BRICK WORK']);
   const [contactPerson, setContactPerson] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -84,12 +85,13 @@ export const ContractorManagementSuite: React.FC = () => {
   // Add New Contractor
   const handleAddContractor = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!companyName.trim()) return;
+    if (!companyName.trim() || selectedTradeTypes.length === 0) return;
 
     const newContractor: Contractor = {
       id: Date.now(),
       companyName,
-      tradeType,
+      tradeTypes: selectedTradeTypes,
+      tradeType: selectedTradeTypes[0],
       contactPerson,
       phone,
       email,
@@ -108,6 +110,7 @@ export const ContractorManagementSuite: React.FC = () => {
     setContactPerson('');
     setPhone('');
     setEmail('');
+    setSelectedTradeTypes(['BRICK WORK']);
     setWingScope('ALL');
   };
 
@@ -188,7 +191,7 @@ export const ContractorManagementSuite: React.FC = () => {
       });
       syncTradeToSupabase(formattedTrade);
     }
-    setTradeType(formattedTrade);
+    setSelectedTradeTypes(prev => (prev.includes(formattedTrade) ? prev : [...prev, formattedTrade]));
     setNewTradeName('');
     setIsAddingNewTrade(false);
     setContractorMessage(`New Trade Category "${formattedTrade}" added & synced to Supabase database!`);
@@ -285,7 +288,7 @@ export const ContractorManagementSuite: React.FC = () => {
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-xs text-slate-400">Trade Category</label>
+                    <label className="text-xs text-slate-400">Trade Categories</label>
                     <button
                       type="button"
                       onClick={() => setIsAddingNewTrade(!isAddingNewTrade)}
@@ -315,9 +318,10 @@ export const ContractorManagementSuite: React.FC = () => {
                     </div>
                   ) : (
                     <select
-                      value={tradeType}
-                      onChange={(e) => setTradeType(e.target.value as TradeType)}
-                      className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white"
+                      multiple
+                      value={selectedTradeTypes}
+                      onChange={(e) => setSelectedTradeTypes(Array.from(e.target.selectedOptions).map(option => option.value as TradeType))}
+                      className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white min-h-[110px]"
                     >
                       {trades.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
@@ -416,7 +420,7 @@ export const ContractorManagementSuite: React.FC = () => {
                     <div>
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-[10px] font-bold text-sky-400 bg-sky-950 border border-sky-800 px-2 py-0.5 rounded-md">
-                          {contractor.tradeType}
+                          {getContractorTradeTypes(contractor).join(', ')}
                         </span>
                         <span className="text-[10px] font-bold text-amber-400 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded-md">
                           🏢 {scopeLabel}
@@ -538,12 +542,12 @@ export const ContractorManagementSuite: React.FC = () => {
                 className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold"
               >
                 {state.contractors
-                  .filter(c => (c.wingScope === assignWing || c.wingScope === 'ALL' || !c.wingScope) && c.status !== 'SUSPENDED')
+                 .filter(c => (c.wingScope === assignWing || c.wingScope === 'ALL' || !c.wingScope) && c.status !== 'SUSPENDED' && contractorHasTrade(c, assignTrade))
                   .map(c => {
                     const scopeTag = c.wingScope === 'B1' ? '[Wing B1]' : c.wingScope === 'B2' ? '[Wing B2]' : '[Both Wings]';
                     return (
                       <option key={c.id} value={c.id}>
-                        {c.companyName} ({c.tradeType}) {scopeTag}
+                       {c.companyName} ({getContractorTradeLabel(c)}) {scopeTag}
                       </option>
                     );
                   })}

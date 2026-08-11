@@ -5,6 +5,7 @@ import { CheckCircle2, Clock, AlertOctagon, Camera, Lock, ArrowLeft, Send, X, Sh
 import { Flat, RoomZone, FlatTask, FlatTaskStatus, Contractor } from '@/lib/types';
 import { getAppState, updateFlatTaskProgress, checkTradeDependency, saveAppState } from '@/lib/dbState';
 import { INITIAL_TASK_CATALOG } from '@/lib/seedData';
+import { contractorHasTrade, getContractorTradeLabel } from '@/lib/contractorTrades';
 
 interface RoomInspectorProps {
   flat: Flat;
@@ -38,7 +39,7 @@ export const RoomInspector: React.FC<RoomInspectorProps> = ({
     const found = existingFlatTasks.find(t => t.taskCatalogId === cItem.id);
     if (found) return found;
 
-    const matchedContractor = state.contractors.find(c => c.tradeType === cItem.tradeType);
+    const matchedContractor = state.contractors.find(c => contractorHasTrade(c, cItem.tradeType));
 
     return {
       id: flat.id * 1000 + cItem.id,
@@ -93,7 +94,7 @@ export const RoomInspector: React.FC<RoomInspectorProps> = ({
     } else if (catalogItem) {
       // Find matching contractors by Trade & Wing Scope
       const matchingContractors = state.contractors.filter(
-        c => c.tradeType === catalogItem.tradeType &&
+        c => contractorHasTrade(c, catalogItem.tradeType) &&
              (c.wingScope === flat.wing || c.wingScope === 'ALL' || !c.wingScope) &&
              c.status !== 'SUSPENDED'
       );
@@ -103,7 +104,7 @@ export const RoomInspector: React.FC<RoomInspectorProps> = ({
         setAssignedContractorId(matchingContractors[0].id);
       } else {
         // Fallback trade contractor
-        const fallback = state.contractors.find(c => c.tradeType === catalogItem.tradeType);
+        const fallback = state.contractors.find(c => contractorHasTrade(c, catalogItem.tradeType));
         setAssignedContractorId(fallback ? fallback.id : undefined);
       }
     }
@@ -251,7 +252,7 @@ export const RoomInspector: React.FC<RoomInspectorProps> = ({
   // Calculate matching contractors for active catalog item
   const matchingContractors = activeCatalogItem
     ? state.contractors.filter(
-        c => c.tradeType === activeCatalogItem.tradeType &&
+        c => contractorHasTrade(c, activeCatalogItem.tradeType) &&
              (c.wingScope === flat.wing || c.wingScope === 'ALL' || !c.wingScope) &&
              c.status !== 'SUSPENDED'
       )
@@ -311,7 +312,7 @@ export const RoomInspector: React.FC<RoomInspectorProps> = ({
           let assignedContractor = state.contractors.find(c => c.id === task.assignedContractorId);
           if (!assignedContractor) {
             const matches = state.contractors.filter(
-              c => c.tradeType === catalogItem.tradeType &&
+              c => contractorHasTrade(c, catalogItem.tradeType) &&
                    (c.wingScope === flat.wing || c.wingScope === 'ALL' || !c.wingScope) &&
                    c.status !== 'SUSPENDED'
             );
@@ -537,7 +538,7 @@ export const RoomInspector: React.FC<RoomInspectorProps> = ({
                           <option value="">-- Select Trade Contractor --</option>
                           {state.contractors.map((c) => (
                             <option key={c.id} value={c.id}>
-                              {c.companyName} ({c.tradeType}) - {c.phone}
+                              {c.companyName} ({getContractorTradeLabel(c)}) - {c.phone}
                             </option>
                           ))}
                         </select>

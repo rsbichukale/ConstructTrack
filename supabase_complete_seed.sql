@@ -67,7 +67,7 @@ INSERT INTO floors (site_id, wing_code, floor_number, floor_label) VALUES
 ON CONFLICT (site_id, wing_code, floor_number) DO NOTHING;
 
 -- 1. Truncate existing tables
-TRUNCATE sites, flats, room_zones, contractors, laborers, task_catalog, flat_tasks, daily_progress_logs, contractor_attendance, department_attendance, daily_work_targets, snagging_items RESTART IDENTITY CASCADE;
+TRUNCATE sites, flats, room_zones, contractors, contractor_trades, laborers, task_catalog, flat_tasks, daily_progress_logs, contractor_attendance, department_attendance, daily_work_targets, snagging_items RESTART IDENTITY CASCADE;
 
 -- 2. Seed Sites
 INSERT INTO sites (id, name) VALUES 
@@ -89,21 +89,37 @@ INSERT INTO room_zones (id, zone_code, zone_label, icon_name) VALUES
 (11, 'TOILET_3',         'Toilet 3',         'Building');
 
 -- 4. Seed Contractors (14 Contractors)
-INSERT INTO contractors (id, company_name, trade_type, contact_person, phone, rate_per_unit, email, status, wing_scope) VALUES
-(1,  'Apex Masonry Works',             'BRICK WORK',    'Suresh Patil',   '+91 9822011223', 45.00,  'apex.masonry@constructtrack.com', 'ACTIVE', 'ALL'),
-(2,  'Precision Plasterers',           'PLASTER WORK',  'Ramesh Shinde',  '+91 9822022334', 35.00,  'precision.plaster@constructtrack.com', 'ACTIVE', 'ALL'),
-(3,  'GypsumPro POP Works',            'POP',           'Anil Kumar',     '+91 9822033445', 28.00,  'gypsum.pop@constructtrack.com', 'ACTIVE', 'ALL'),
-(4,  'Royal Ceramic & Granite',        'TILES',         'Vikram Rathod',  '+91 9822044556', 65.00,  'royal.tiles@constructtrack.com', 'ACTIVE', 'ALL'),
-(5,  'AquaFlow Plumbing Co.',          'PLUMBER',       'Dinesh Pawar',   '+91 9822055667', 120.00, 'aquaflow.plumb@constructtrack.com', 'ACTIVE', 'ALL'),
-(6,  'MetalCraft Railings',            'FABRICATION',   'Santosh Jadhav', '+91 9822066778', 150.00, 'metalcraft@constructtrack.com', 'ACTIVE', 'ALL'),
-(7,  'ShieldCoat Waterproofing',       'WATERPROOFING', 'Mahesh Kadam',   '+91 9822077889', 85.00,  'shieldcoat@constructtrack.com', 'ACTIVE', 'ALL'),
-(8,  'BrightVolt Electricals',         'ELECTRICAL',    'Vijay Bhosale',  '+91 9822088990', 95.00,  'brightvolt@constructtrack.com', 'ACTIVE', 'ALL'),
-(9,  'Canvas Finish Painters',         'PAINTING',      'Prakash More',   '+91 9822099001', 22.00,  'canvas.paint@constructtrack.com', 'ACTIVE', 'ALL'),
-(10, 'CraftWood Joinery',              'CARPENTRY',     'Ganesh Deshmukh','+91 9822100112', 180.00, 'craftwood@constructtrack.com', 'ACTIVE', 'ALL'),
-(11, 'Apex Ceiling Systems',           'FALSE CEILING', 'Sanjay Thorat',  '+91 9822111223', 75.00,  'apex.ceiling@constructtrack.com', 'ACTIVE', 'ALL'),
-(12, 'DoorMaster Fittings',            'DOOR FITTING',  'Deepak Sawant',  '+91 9822122334', 110.00, 'doormaster@constructtrack.com', 'ACTIVE', 'ALL'),
-(13, 'SanitaryPlus Solutions',         'SANITARY',      'Nitin Kale',     '+91 9822133445', 130.00, 'sanitaryplus@constructtrack.com', 'ACTIVE', 'ALL'),
-(14, 'CleanHandover Services',         'CLEANING',      'Sachin Chavan',  '+91 9822144556', 15.00,  'cleanhandover@constructtrack.com', 'ACTIVE', 'ALL');
+INSERT INTO contractors (id, company_name, contact_person, phone, rate_per_unit, email, status, wing_scope) VALUES
+(1,  'Apex Masonry Works',             'Suresh Patil',   '+91 9822011223', 45.00,  'apex.masonry@constructtrack.com', 'ACTIVE', 'ALL'),
+(2,  'Precision Plasterers',           'Ramesh Shinde',  '+91 9822022334', 35.00,  'precision.plaster@constructtrack.com', 'ACTIVE', 'ALL'),
+(3,  'GypsumPro POP Works',            'Anil Kumar',     '+91 9822033445', 28.00,  'gypsum.pop@constructtrack.com', 'ACTIVE', 'ALL'),
+(4,  'Royal Ceramic & Granite',        'Vikram Rathod',  '+91 9822044556', 65.00,  'royal.tiles@constructtrack.com', 'ACTIVE', 'ALL'),
+(5,  'AquaFlow Plumbing Co.',          'Dinesh Pawar',   '+91 9822055667', 120.00, 'aquaflow.plumb@constructtrack.com', 'ACTIVE', 'ALL'),
+(6,  'MetalCraft Railings',            'Santosh Jadhav', '+91 9822066778', 150.00, 'metalcraft@constructtrack.com', 'ACTIVE', 'ALL'),
+(7,  'ShieldCoat Waterproofing',       'Mahesh Kadam',   '+91 9822077889', 85.00,  'shieldcoat@constructtrack.com', 'ACTIVE', 'ALL'),
+(8,  'BrightVolt Electricals',         'Vijay Bhosale',  '+91 9822088990', 95.00,  'brightvolt@constructtrack.com', 'ACTIVE', 'ALL'),
+(9,  'Canvas Finish Painters',         'Prakash More',   '+91 9822099001', 22.00,  'canvas.paint@constructtrack.com', 'ACTIVE', 'ALL'),
+(10, 'CraftWood Joinery',              'Ganesh Deshmukh','+91 9822100112', 180.00, 'craftwood@constructtrack.com', 'ACTIVE', 'ALL'),
+(11, 'Apex Ceiling Systems',           'Sanjay Thorat',  '+91 9822111223', 75.00,  'apex.ceiling@constructtrack.com', 'ACTIVE', 'ALL'),
+(12, 'DoorMaster Fittings',            'Deepak Sawant',  '+91 9822122334', 110.00, 'doormaster@constructtrack.com', 'ACTIVE', 'ALL'),
+(13, 'SanitaryPlus Solutions',         'Nitin Kale',     '+91 9822133445', 130.00, 'sanitaryplus@constructtrack.com', 'ACTIVE', 'ALL'),
+(14, 'CleanHandover Services',         'Sachin Chavan',  '+91 9822144556', 15.00,  'cleanhandover@constructtrack.com', 'ACTIVE', 'ALL');
+
+INSERT INTO contractor_trades (contractor_id, trade_type) VALUES
+(1,  'BRICK WORK'),
+(2,  'PLASTER WORK'),
+(3,  'POP'),
+(4,  'TILES'),
+(5,  'PLUMBER'),
+(6,  'FABRICATION'),
+(7,  'WATERPROOFING'),
+(8,  'ELECTRICAL'),
+(9,  'PAINTING'),
+(10, 'CARPENTRY'),
+(11, 'FALSE CEILING'),
+(12, 'DOOR FITTING'),
+(13, 'SANITARY'),
+(14, 'CLEANING');
 
 -- 5. Seed Laborers (10 Laborers)
 INSERT INTO laborers (id, contractor_id, is_department_labor, name, skill_level, phone, id_number, daily_wage_rate) VALUES
@@ -242,23 +258,16 @@ INSERT INTO flat_tasks (flat_id, task_catalog_id, assigned_contractor_id, status
 SELECT 
     f.id AS flat_id, 
     tc.id AS task_catalog_id,
-    CASE 
-        WHEN tc.trade_type = 'BRICK WORK' THEN 1
-        WHEN tc.trade_type = 'PLASTER WORK' THEN 2
-        WHEN tc.trade_type = 'POP' THEN 3
-        WHEN tc.trade_type = 'TILES' THEN 4
-        WHEN tc.trade_type = 'PLUMBER' THEN 5
-        WHEN tc.trade_type = 'FABRICATION' THEN 6
-        WHEN tc.trade_type = 'WATERPROOFING' THEN 7
-        WHEN tc.trade_type = 'ELECTRICAL' THEN 8
-        WHEN tc.trade_type = 'PAINTING' THEN 9
-        WHEN tc.trade_type = 'CARPENTRY' THEN 10
-        WHEN tc.trade_type = 'FALSE CEILING' THEN 11
-        WHEN tc.trade_type = 'DOOR FITTING' THEN 12
-        WHEN tc.trade_type = 'SANITARY' THEN 13
-        WHEN tc.trade_type = 'CLEANING' THEN 14
-        ELSE 1
-    END AS assigned_contractor_id,
+    COALESCE(
+      (
+        SELECT ct.contractor_id
+        FROM contractor_trades ct
+        WHERE ct.trade_type = tc.trade_type
+        ORDER BY ct.contractor_id
+        LIMIT 1
+      ),
+      1
+    ) AS assigned_contractor_id,
     'NOT_STARTED' AS status,
     0 AS completion_pct
 FROM flats f

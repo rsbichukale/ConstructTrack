@@ -124,7 +124,8 @@ export interface DailyProgressLog {
 export interface Contractor {
   id: number;
   companyName: string;
-  tradeType: TradeType;
+  tradeTypes: TradeType[];
+  tradeType?: TradeType; // Legacy single-trade compatibility
   contactPerson: string;
   phone: string;
   ratePerUnit: number; // Unit rate for RA billing calculation

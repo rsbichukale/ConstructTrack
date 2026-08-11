@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Layers, Plus, CheckCircle2, Sparkles, Filter, Hash, X } from 'lucide-react';
 import { getAppState, saveAppState, getDynamicTrades } from '@/lib/dbState';
 import { TaskCatalogItem, TradeType, FlatTaskPriority, FlatTask } from '@/lib/types';
+import { contractorHasTrade } from '@/lib/contractorTrades';
 
 export const MicroTaskManager: React.FC = () => {
   const state = getAppState();
@@ -49,7 +50,7 @@ export const MicroTaskManager: React.FC = () => {
 
     // Propagate to all 70 flats
     const newFlatTaskInstances: FlatTask[] = state.flats.map((flat, idx) => {
-      const contractor = state.contractors.find(c => c.tradeType === tradeType);
+      const contractor = state.contractors.find(c => contractorHasTrade(c, tradeType));
       return {
         id: Date.now() + idx + Math.floor(Math.random() * 10000),
         flatId: flat.id,
@@ -87,7 +88,7 @@ export const MicroTaskManager: React.FC = () => {
       roomZoneId: customRoomZoneId,
     };
 
-    const contractor = state.contractors.find(c => c.tradeType === customTradeType);
+    const contractor = state.contractors.find(c => contractorHasTrade(c, customTradeType));
     const customFlatTask: FlatTask = {
       id: Date.now() + 999,
       flatId: selectedFlatId,

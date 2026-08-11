@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Zap, AlertTriangle, Users, ArrowRight, ShieldAlert, CheckCircle2, TrendingUp, Clock, Layers, ArrowUpRight } from 'lucide-react';
 import { getAppState, saveAppState, getDynamicTrades } from '@/lib/dbState';
 import { TradeType } from '@/lib/types';
+import { contractorHasTrade } from '@/lib/contractorTrades';
 
 export const ResourceAllocationCenter: React.FC = () => {
   const state = getAppState();
@@ -22,14 +23,15 @@ export const ResourceAllocationCenter: React.FC = () => {
     const blocked = tasks.filter(t => t.status === 'REWORK' || !!t.blockerReason).length;
     const notStarted = tasks.filter(t => t.status === 'NOT_STARTED').length;
 
-    const contractor = state.contractors.find(c => c.tradeType === trade);
-    const deployedAttendance = state.attendance.filter(a => a.contractorId === contractor?.id);
+    const tradeContractors = state.contractors.filter(c => contractorHasTrade(c, trade));
+    const tradeContractorIds = new Set(tradeContractors.map(c => c.id));
+    const deployedAttendance = state.attendance.filter(a => tradeContractorIds.has(a.contractorId));
     const totalWorkersDeployed = deployedAttendance.reduce((sum, a) => sum + a.masonsCount + a.helpersCount, 0);
 
     return {
       trade,
-      contractorName: contractor?.companyName || 'Unassigned',
-      contractorId: contractor?.id || 1,
+      contractorName: tradeContractors.length > 0 ? tradeContractors.map(c => c.companyName).join(', ') : 'Unassigned',
+      contractorId: tradeContractors[0]?.id || 1,
       totalTasks: tasks.length,
       approved,
       inProgress,

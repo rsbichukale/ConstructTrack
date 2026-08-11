@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Users, AlertTriangle, CheckCircle2, Filter, Camera, Send, Building, PhoneCall, Share2, Clock, CheckSquare, ShieldAlert } from 'lucide-react';
 import { getAppState, updateFlatTaskProgress, saveAppState } from '@/lib/dbState';
 import { FlatTaskPriority, TradeType, ContractorAttendance } from '@/lib/types';
+import { getContractorTradeLabel } from '@/lib/contractorTrades';
 
 export const ContractorPortal: React.FC = () => {
   const state = getAppState();
@@ -103,7 +104,7 @@ export const ContractorPortal: React.FC = () => {
     if (!activeContractor) return;
 
     let text = `*🏗️ CONSTRUCTTRACK - CONTRACTOR DAILY SUMMARY*\n`;
-    text += `*Contractor:* ${activeContractor.companyName} (${activeContractor.tradeType})\n`;
+    text += `*Contractor:* ${activeContractor.companyName} (${getContractorTradeLabel(activeContractor)})\n`;
     text += `*Date:* ${new Date().toLocaleDateString()}\n`;
     text += `-----------------------------------\n`;
     text += `*👷 Muster Roll:* ${masonsCount} Masons + ${helpersCount} Helpers Deployed\n`;
@@ -166,7 +167,7 @@ export const ContractorPortal: React.FC = () => {
           >
             {state.contractors.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.companyName} ({c.tradeType})
+                {c.companyName} ({getContractorTradeLabel(c)})
               </option>
             ))}
           </select>
@@ -176,7 +177,7 @@ export const ContractorPortal: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-white">{activeContractor.contactPerson}</span>
                 <span className="text-[10px] font-extrabold bg-sky-950 text-sky-400 border border-sky-800 px-2 py-0.5 rounded">
-                  {activeContractor.tradeType}
+                  {getContractorTradeLabel(activeContractor)}
                 </span>
               </div>
               <div className="text-slate-400">Phone: {activeContractor.phone}</div>

@@ -19,9 +19,15 @@ CREATE TABLE flats (
 CREATE TABLE contractors (
     id SERIAL PRIMARY KEY,
     company_name VARCHAR(100) NOT NULL,
-    trade_type VARCHAR(50) NOT NULL, -- 'PLASTER', 'BRICK WORK', 'POP', 'TILES', 'PLUMBER'
     contact_person VARCHAR(100),
     phone VARCHAR(20) UNIQUE NOT NULL
+);
+
+CREATE TABLE contractor_trades (
+    id SERIAL PRIMARY KEY,
+    contractor_id INT REFERENCES contractors(id) ON DELETE CASCADE,
+    trade_type VARCHAR(50) NOT NULL,
+    UNIQUE(contractor_id, trade_type)
 );
 
 CREATE TABLE laborers (
