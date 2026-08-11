@@ -215,6 +215,19 @@ export const ContractorManagementSuite: React.FC = () => {
     setTimeout(() => setContractorMessage(null), 3500);
   };
 
+  // Dynamic Wings & Floors from Database State
+  const availableWings = Array.from(new Set([
+    ...(state.wings || []).map(w => w.wingCode),
+    ...(state.flats || []).map(f => f.wing)
+  ])).filter(Boolean);
+  const wingsList = availableWings.length > 0 ? availableWings : ['B1', 'B2'];
+
+  const availableFloors = Array.from(new Set([
+    ...(state.floors || []).map(f => f.floorNumber),
+    ...(state.flats || []).map(f => f.floorNumber)
+  ])).sort((a, b) => a - b);
+  const floorsList = availableFloors.length > 0 ? availableFloors : [1, 2, 3, 4, 5, 6, 7];
+
   return (
     <div className="space-y-6">
       {/* Header & Tabs */}
@@ -511,8 +524,7 @@ export const ContractorManagementSuite: React.FC = () => {
                 onChange={(e) => setAssignWing(e.target.value as 'B1' | 'B2')}
                 className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold"
               >
-                <option value="B1">Wing B1</option>
-                <option value="B2">Wing B2</option>
+                {wingsList.map(w => <option key={w} value={w}>Wing {w}</option>)}
               </select>
             </div>
 
@@ -523,7 +535,7 @@ export const ContractorManagementSuite: React.FC = () => {
                 onChange={(e) => setAssignFloor(parseInt(e.target.value, 10))}
                 className="w-full mt-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold"
               >
-                {[1, 2, 3, 4, 5, 6, 7].map(f => <option key={f} value={f}>Floor {f}</option>)}
+                {floorsList.map(f => <option key={f} value={f}>Floor {f}</option>)}
               </select>
             </div>
 
