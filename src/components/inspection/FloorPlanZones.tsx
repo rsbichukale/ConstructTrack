@@ -4,6 +4,7 @@ import React from 'react';
 import { Grid, Sofa, BedDouble, Bed, Utensils, Bath, Droplets, Wind, Sun, Building, ArrowRight } from 'lucide-react';
 import { RoomZone, Flat } from '@/lib/types';
 import { getAppState } from '@/lib/dbState';
+import { INITIAL_TASK_CATALOG } from '@/lib/seedData';
 
 interface FloorPlanZonesProps {
   flat: Flat;
@@ -30,6 +31,8 @@ export const FloorPlanZones: React.FC<FloorPlanZonesProps> = ({
 }) => {
   const state = getAppState();
 
+  const taskCatalogToUse = (state.taskCatalog && state.taskCatalog.length > 0) ? state.taskCatalog : INITIAL_TASK_CATALOG;
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -55,7 +58,7 @@ export const FloorPlanZones: React.FC<FloorPlanZonesProps> = ({
             const isSelected = selectedZoneId === zone.id;
 
             // Calculate zone task progress inside this flat
-            const catalogItemIds = state.taskCatalog.filter(c => c.roomZoneId === zone.id).map(c => c.id);
+            const catalogItemIds = taskCatalogToUse.filter(c => c.roomZoneId === zone.id).map(c => c.id);
             const zoneTasks = state.flatTasks.filter(t => t.flatId === flat.id && catalogItemIds.includes(t.taskCatalogId));
             
             const totalTasks = zoneTasks.length;

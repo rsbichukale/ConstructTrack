@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { CheckCircle2, Clock, AlertOctagon, Camera, Lock, ArrowLeft, Send, X, ShieldAlert, Sparkles, User, Filter, Building, Zap, Check, PhoneCall } from 'lucide-react';
 import { Flat, RoomZone, FlatTask, FlatTaskStatus, Contractor } from '@/lib/types';
 import { getAppState, updateFlatTaskProgress, checkTradeDependency, saveAppState } from '@/lib/dbState';
+import { INITIAL_TASK_CATALOG } from '@/lib/seedData';
 
 interface RoomInspectorProps {
   flat: Flat;
@@ -20,14 +21,39 @@ export const RoomInspector: React.FC<RoomInspectorProps> = ({
 }) => {
   const state = getAppState();
 
-  // Find catalog tasks for this room zone
-  const catalogItems = state.taskCatalog.filter(c => c.roomZoneId === roomZone.id);
+  // Find catalog tasks for this room zone with resilient fallback
+  const loadedCatalog = (state.taskCatalog && state.taskCatalog.length > 0) ? state.taskCatalog : INITIAL_TASK_CATALOG;
+  let catalogItems = loadedCatalog.filter(c => c.roomZoneId === roomZone.id);
+  if (catalogItems.length === 0) {
+    catalogItems = INITIAL_TASK_CATALOG.filter(c => c.roomZoneId === roomZone.id);
+  }
   const catalogIds = catalogItems.map(c => c.id);
 
-  // Find flat tasks corresponding to these catalog items
-  const tasks = state.flatTasks.filter(
+  // Find flat tasks corresponding to these catalog items (or auto-generate view tasks)
+  const existingFlatTasks = state.flatTasks.filter(
     t => t.flatId === flat.id && catalogIds.includes(t.taskCatalogId)
   );
+
+  const tasks: FlatTask[] = catalogItems.map(cItem => {
+    const found = existingFlatTasks.find(t => t.taskCatalogId === cItem.id);
+    if (found) return found;
+
+    const matchedContractor = state.contractors.find(c => c.tradeType === cItem.tradeType);
+
+    return {
+      id: flat.id * 1000 + cItem.id,
+      flatId: flat.id,
+      taskCatalogId: cItem.id,
+      assignedContractorId: matchedContractor?.id || 1,
+      status: 'NOT_STARTED',
+      priority: 'MEDIUM',
+      completionPct: 0,
+      unitOfMeasure: 'SQFT',
+      totalQuantity: 1000,
+      completedQuantity: 0,
+      updatedAt: new Date().toISOString(),
+    };
+  });
 
   // Room Task Filter State
   const [taskFilter, setTaskFilter] = useState<'ALL' | 'ASSIGNED' | number>('ALL');
