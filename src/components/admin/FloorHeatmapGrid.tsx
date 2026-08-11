@@ -33,7 +33,8 @@ export const FloorHeatmapGrid: React.FC<FloorHeatmapGridProps> = ({
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('ALL');
   const [selectedFlat, setSelectedFlat] = useState<Flat | null>(null);
 
-  const floors = [7, 6, 5, 4, 3, 2, 1];
+  const dbFloors = Array.from(new Set((flats || []).map(f => f.floorNumber))).sort((a, b) => b - a);
+  const floors = dbFloors.length > 0 ? dbFloors : [7, 6, 5, 4, 3, 2, 1];
 
   // Helper to compute overall flat completion % and primary status badge
   const getFlatInfo = (flatId: number) => {

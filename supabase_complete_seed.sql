@@ -31,6 +31,41 @@ INSERT INTO trades (trade_code, trade_name) VALUES
 ('CLEANING', 'Deep Cleaning & Key Handover')
 ON CONFLICT (trade_code) DO NOTHING;
 
+-- 0b. Dedicated Wings & Floors Master Tables
+CREATE TABLE IF NOT EXISTS wings (
+    id SERIAL PRIMARY KEY,
+    site_id INT REFERENCES sites(id) ON DELETE CASCADE,
+    wing_code VARCHAR(20) UNIQUE NOT NULL,
+    wing_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE wings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read-write wings" ON wings FOR ALL USING (true);
+
+INSERT INTO wings (id, site_id, wing_code, wing_name) VALUES
+(1, 1, 'B1', 'Wing B1'),
+(2, 1, 'B2', 'Wing B2')
+ON CONFLICT (wing_code) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS floors (
+    id SERIAL PRIMARY KEY,
+    site_id INT REFERENCES sites(id) ON DELETE CASCADE,
+    wing_code VARCHAR(20) NOT NULL,
+    floor_number INT NOT NULL,
+    floor_label VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(site_id, wing_code, floor_number)
+);
+
+ALTER TABLE floors ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read-write floors" ON floors FOR ALL USING (true);
+
+INSERT INTO floors (site_id, wing_code, floor_number, floor_label) VALUES
+(1, 'B1', 1, '1st Floor'), (1, 'B1', 2, '2nd Floor'), (1, 'B1', 3, '3rd Floor'), (1, 'B1', 4, '4th Floor'), (1, 'B1', 5, '5th Floor'), (1, 'B1', 6, '6th Floor'), (1, 'B1', 7, '7th Floor'),
+(1, 'B2', 1, '1st Floor'), (1, 'B2', 2, '2nd Floor'), (1, 'B2', 3, '3rd Floor'), (1, 'B2', 4, '4th Floor'), (1, 'B2', 5, '5th Floor'), (1, 'B2', 6, '6th Floor'), (1, 'B2', 7, '7th Floor')
+ON CONFLICT (site_id, wing_code, floor_number) DO NOTHING;
+
 -- 1. Truncate existing tables
 TRUNCATE sites, flats, room_zones, contractors, laborers, task_catalog, flat_tasks, daily_progress_logs, contractor_attendance, department_attendance, daily_work_targets, snagging_items RESTART IDENTITY CASCADE;
 

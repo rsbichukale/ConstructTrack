@@ -22,6 +22,9 @@ export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null
       dailyWorkTargetsRes,
       snaggingItemsRes,
       adminCredsRes,
+      tradesRes,
+      wingsRes,
+      floorsRes,
     ] = await Promise.all([
       supabase.from('sites').select('*'),
       supabase.from('room_zones').select('*'),
@@ -36,6 +39,9 @@ export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null
       supabase.from('daily_work_targets').select('*'),
       supabase.from('snagging_items').select('*'),
       supabase.from('admin_credentials').select('*').limit(1),
+      supabase.from('trades').select('*'),
+      supabase.from('wings').select('*'),
+      supabase.from('floors').select('*'),
     ]);
 
     const sites = sitesRes.data;
@@ -51,8 +57,38 @@ export async function fetchStateFromSupabase(): Promise<Partial<AppState> | null
     const dailyWorkTargets = dailyWorkTargetsRes.data;
     const snaggingItems = snaggingItemsRes.data;
     const adminCreds = adminCredsRes.data;
+    const dbTrades = tradesRes.data;
+    const dbWings = wingsRes.data;
+    const dbFloors = floorsRes.data;
 
     const result: Partial<AppState> = {};
+
+    if (dbTrades && dbTrades.length > 0) {
+      result.trades = dbTrades.map(t => ({
+        id: t.id,
+        tradeCode: t.trade_code,
+        tradeName: t.trade_name,
+      }));
+    }
+
+    if (dbWings && dbWings.length > 0) {
+      result.wings = dbWings.map(w => ({
+        id: w.id,
+        siteId: w.site_id,
+        wingCode: w.wing_code,
+        wingName: w.wing_name,
+      }));
+    }
+
+    if (dbFloors && dbFloors.length > 0) {
+      result.floors = dbFloors.map(f => ({
+        id: f.id,
+        siteId: f.site_id,
+        wingCode: f.wing_code,
+        floorNumber: f.floor_number,
+        floorLabel: f.floor_label,
+      }));
+    }
 
     if (sites && sites.length > 0) {
       result.sites = sites.map(s => ({

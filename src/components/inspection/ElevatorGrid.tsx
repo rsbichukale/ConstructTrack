@@ -15,20 +15,28 @@ export const ElevatorGrid: React.FC<ElevatorGridProps> = ({
   onSelectFlat,
 }) => {
   const state = getAppState();
-  const floors = [7, 6, 5, 4, 3, 2, 1]; // Top-down building elevation
-  const flatIndices = [1, 2, 3, 4, 5];
+
+  // Dynamic floors (top-down)
+  const dbFloors = Array.from(new Set(state.flats.filter(f => f.wing === wing).map(f => f.floorNumber))).sort((a, b) => b - a);
+  const floors = dbFloors.length > 0 ? dbFloors : [7, 6, 5, 4, 3, 2, 1];
+
+  // Dynamic flat index numbers per floor
+  const flatNumbers = state.flats.filter(f => f.wing === wing).map(f => parseInt(f.flatNumber.slice(-1)));
+  const dbFlatIndices = Array.from(new Set(flatNumbers.filter(n => !isNaN(n)))).sort((a, b) => a - b);
+  const flatIndices = dbFlatIndices.length > 0 ? dbFlatIndices : [1, 2, 3, 4, 5];
 
   const [selectedTrade, setSelectedTrade] = useState<TradeType | 'ALL'>('ALL');
 
-  const trades: TradeType[] = [
-    'BRICK WORK',
-    'PLASTER WORK',
-    'POP',
-    'TILES',
-    'PLUMBER',
-    'FABRICATION',
-    'WATERPROOFING',
-  ];
+  // Dynamic Trades List
+  const trades: TradeType[] = Array.from(
+    new Set([
+      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING',
+      'ELECTRICAL', 'PAINTING', 'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
+      ...(state.taskCatalog || []).map(t => t.tradeType),
+      ...(state.contractors || []).map(c => c.tradeType),
+      ...(state.customTrades || []),
+    ])
+  ).filter(Boolean) as TradeType[];
 
   return (
     <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">

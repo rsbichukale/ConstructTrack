@@ -49,7 +49,16 @@ export const BulkFloorLogger: React.FC<BulkFloorLoggerProps> = ({
     }, 1500);
   };
 
-  const trades: TradeType[] = ['BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING'];
+  // Dynamic Trades List from Database
+  const trades: TradeType[] = Array.from(
+    new Set([
+      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 'FABRICATION', 'WATERPROOFING',
+      'ELECTRICAL', 'PAINTING', 'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
+      ...(state.taskCatalog || []).map(t => t.tradeType),
+      ...(state.contractors || []).map(c => c.tradeType),
+      ...(state.customTrades || []),
+    ])
+  ).filter(Boolean) as TradeType[];
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">

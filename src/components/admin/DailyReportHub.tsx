@@ -44,15 +44,17 @@ export const DailyReportHub: React.FC = () => {
   const [deptWorkDescription, setDeptWorkDescription] = useState<string>('');
   const [deptNarration, setDeptNarration] = useState<string>('');
 
-  const trades: TradeType[] = [
-    'BRICK WORK',
-    'PLASTER WORK',
-    'POP',
-    'TILES',
-    'PLUMBER',
-    'FABRICATION',
-    'WATERPROOFING',
-  ];
+  // Dynamic Trades List from Database
+  const trades: TradeType[] = Array.from(
+    new Set([
+      'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 
+      'FABRICATION', 'WATERPROOFING', 'ELECTRICAL', 'PAINTING', 
+      'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING',
+      ...(state.taskCatalog || []).map(t => t.tradeType),
+      ...(state.contractors || []).map(c => c.tradeType),
+      ...(state.customTrades || []),
+    ])
+  ).filter(Boolean) as TradeType[];
 
   // Daily targets for selected date
   const selectedTargets = (state.dailyWorkTargets || []).filter(t => t.dateAssigned === selectedDate);

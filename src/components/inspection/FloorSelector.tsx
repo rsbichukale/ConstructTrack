@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Layers, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { calculateFloorProgress } from '@/lib/dbState';
+import { calculateFloorProgress, getAppState } from '@/lib/dbState';
 
 interface FloorSelectorProps {
   wing: 'B1' | 'B2';
@@ -20,7 +20,9 @@ export const FloorSelector: React.FC<FloorSelectorProps> = ({
     setIsMounted(true);
   }, []);
 
-  const floors = [1, 2, 3, 4, 5, 6, 7];
+  const state = getAppState();
+  const dbFloors = Array.from(new Set(state.flats.filter(f => f.wing === wing).map(f => f.floorNumber))).sort((a, b) => a - b);
+  const floors = dbFloors.length > 0 ? dbFloors : [1, 2, 3, 4, 5, 6, 7];
 
   return (
     <div className="space-y-4">

@@ -44,6 +44,27 @@ export interface Site {
   name: string;
 }
 
+export interface TradeMaster {
+  id: number;
+  tradeCode: string;
+  tradeName: string;
+}
+
+export interface WingMaster {
+  id: number;
+  siteId: number;
+  wingCode: 'B1' | 'B2' | string;
+  wingName: string;
+}
+
+export interface FloorMaster {
+  id: number;
+  siteId: number;
+  wingCode: string;
+  floorNumber: number;
+  floorLabel: string;
+}
+
 export interface Flat {
   id: number;
   siteId: number;

@@ -1,4 +1,4 @@
-import { Site, Flat, RoomZone, TaskCatalogItem, FlatTask, Contractor, Laborer, DailyProgressLog, ContractorAttendance, DepartmentLaborAttendance, DailyWorkTarget, ExecutionPhase, SnaggingItem, AdminUserCredentials } from './types';
+import { Site, Flat, RoomZone, TaskCatalogItem, FlatTask, Contractor, Laborer, DailyProgressLog, ContractorAttendance, DepartmentLaborAttendance, DailyWorkTarget, ExecutionPhase, SnaggingItem, AdminUserCredentials, TradeMaster, WingMaster, FloorMaster } from './types';
 import { INITIAL_SITES, INITIAL_ROOM_ZONES, INITIAL_CONTRACTORS, INITIAL_LABORERS, INITIAL_TASK_CATALOG, INITIAL_DAILY_TARGETS, INITIAL_EXECUTION_PHASES, generateInitialFlats, generateInitialFlatTasks } from './seedData';
 import { saveOfflineLog } from '@/lib/offlineSync';
 import { syncTaskToSupabase, syncDailyProgressLogToSupabase, syncDailyWorkTargetToSupabase, syncSnaggingItemToSupabase, fetchStateFromSupabase, seedFullProjectDataToSupabase } from './supabaseSync';
@@ -22,6 +22,9 @@ export interface AppState {
   departmentAttendance: DepartmentLaborAttendance[];
   adminCredentials: AdminUserCredentials;
   customTrades?: string[];
+  trades?: TradeMaster[];
+  wings?: WingMaster[];
+  floors?: FloorMaster[];
 }
 
 let currentState: AppState | null = null;
