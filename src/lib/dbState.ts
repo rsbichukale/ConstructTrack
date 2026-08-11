@@ -138,17 +138,22 @@ export function getDynamicTrades(state?: AppState): TradeType[] {
   const tradeFromContractors = (st.contractors || []).map(c => c.tradeType);
   const customTrades = st.customTrades || [];
 
-  const unique = Array.from(
-    new Set([
-      ...tradeCodesFromDb,
-      ...tradeNamesFromDb,
-      ...tradeFromCatalog,
-      ...tradeFromContractors,
-      ...customTrades,
-    ])
-  ).filter(Boolean);
+  const masterTradeTypes: TradeType[] = [
+    'BRICK WORK', 'PLASTER WORK', 'POP', 'TILES', 'PLUMBER', 
+    'FABRICATION', 'WATERPROOFING', 'ELECTRICAL', 'PAINTING', 
+    'CARPENTRY', 'FALSE CEILING', 'DOOR FITTING', 'SANITARY', 'CLEANING'
+  ];
 
-  return unique as TradeType[];
+  const combined = [
+    ...tradeCodesFromDb,
+    ...tradeNamesFromDb,
+    ...tradeFromCatalog,
+    ...tradeFromContractors,
+    ...customTrades,
+    ...masterTradeTypes,
+  ];
+
+  return Array.from(new Set(combined)).filter(Boolean) as TradeType[];
 }
 
 // Check Trade Dependency Rules (Multi-prerequisite & Curing Hold Support)
