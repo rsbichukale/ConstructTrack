@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased font-sans min-h-screen selection:bg-amber-500 selection:text-slate-950;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Mobile Safe-Area Utilities */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Prevent unwanted double-tap zoom delay */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Hide scrollbars for clean PWA experience */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Glassmorphism Cards */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-glow {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.1);
+}
+
+/* Bottom Sheet mobile animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* =========================================================================
+   MODAL SYSTEM — Overlay + Panel + Animations
+   ========================================================================= */
+
+/* Smooth modal entrance keyframes */
+@keyframes modalOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalPanelIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Full-viewport modal overlay with backdrop blur */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(2, 6, 23, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: modalOverlayIn 0.2s ease-out forwards;
+}
+
+/* Glassmorphism modal panel — always fits viewport, scrolls internally */
+.modal-panel {
+  position: relative;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.06),
+    0 25px 50px -12px rgba(0, 0, 0, 0.6),
+    0 0 40px -8px rgba(56, 189, 248, 0.08);
+  animation: modalPanelIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scrollbar inside modal panels */
+.modal-panel::-webkit-scrollbar {
+  width: 5px;
+}
+.modal-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-panel::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+
+/* =========================================================================
+   ANIMATE-IN / FADE-IN — used by many components
+   ========================================================================= */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+.fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* =========================================================================
+   FORM INPUT POLISH
+   ========================================================================= */
+
+/* Smooth focus ring for all text inputs, selects, textareas inside modals */
+.modal-panel input,
+.modal-panel select,
+.modal-panel textarea {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.modal-panel input:focus,
+.modal-panel select:focus,
+.modal-panel textarea:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+}
+
+/* =========================================================================
+   TABLE ROW HOVER POLISH
+   ========================================================================= */
+
+table tbody tr {
+  transition: background-color 0.15s ease;
+}
+

@@ -1,0 +1,50 @@
+{
+  "name": "ConstructTrack - Construction Site Manager",
+  "short_name": "ConstructTrack",
+  "description": "High-Rise Construction Progress Tracker, Room Inspector, and CPM Engine",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Room Inspector",
+      "short_name": "Inspection",
+      "description": "Open direct flat inspection",
+      "url": "/?tab=inspection",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Site Reports",
+      "short_name": "Reports",
+      "description": "Open DPR & Site Reports",
+      "url": "/?tab=siteReports",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

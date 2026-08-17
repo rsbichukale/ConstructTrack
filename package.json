@@ -1,0 +1,47 @@
+{
+  "name": "construct-track",
+  "version": "2.2.0",
+  "private": true,
+  "description": "ConstructTrack - Construction Daily Progress, Room Inspection & Contractor Management System",
+  "scripts": {
+    "postinstall": "npm install --prefix backend && npm install --prefix frontend",
+    "start": "node launch-site-server.js",
+    "start:site": "node launch-site-server.js",
+    "dev": "concurrently \"npm start --prefix backend\" \"npm run dev --prefix frontend\" --names \"BACKEND,FRONTEND\" --prefix-colors \"yellow,cyan\"",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm start --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "db:init": "node backend/scripts/init_local_db_schema.js",
+    "db:migrate": "node database/scripts/migrate.js",
+    "db:seed": "node database/scripts/seed.js",
+    "db:backup": "cmd /c backup-local-database.bat",
+    "test:reports": "node backend/scripts/test_all_enterprise_reports.js",
+    "test:backend": "node --test backend/tests/unit_services.test.js",
+    "test": "npm run test:backend && npm run test:reports"
+  },
+  "keywords": [
+    "construction",
+    "site-manager",
+    "progress-tracker",
+    "contractor-management",
+    "nextjs",
+    "express",
+    "postgresql",
+    "desktop-app",
+    "local-network-hub"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "compression": "^1.8.1",
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
+    "next": "^16.3.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}
