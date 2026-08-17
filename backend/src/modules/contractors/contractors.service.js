@@ -88,6 +88,18 @@ class ContractorsService {
     eventBus.broadcast('CONTRACTOR_REGISTERED', contractor);
     return contractor;
   }
+
+  static async deleteContractor(id) {
+    const deleted = await ContractorsRepository.deleteContractor(id);
+    eventBus.broadcast('CONTRACTOR_DELETED', { id });
+    return deleted;
+  }
+
+  static async createLaborer(payload) {
+    const laborer = await ContractorsRepository.createLaborer(payload);
+    eventBus.broadcast('LABORER_REGISTERED', laborer);
+    return laborer;
+  }
 }
 
 module.exports = ContractorsService;

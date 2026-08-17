@@ -203,6 +203,28 @@ class ContractorsRepository {
     ]);
     return res.rows[0];
   }
+
+  static async deleteContractor(id) {
+    const res = await db.query(`DELETE FROM contractors WHERE id = $1 RETURNING *;`, [id]);
+    return res.rows[0];
+  }
+
+  static async createLaborer(data) {
+    const res = await db.query(`
+      INSERT INTO laborers (
+        contractor_id, name, skill_level, phone, daily_wage_rate, is_department_labor
+      ) VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *;
+    `, [
+      data.contractorId || data.contractor_id || null,
+      data.name || 'Laborer',
+      data.skillLevel || data.skill_level || 'HELPER',
+      data.phone || null,
+      Number(data.dailyWageRate || data.daily_wage_rate) || 500,
+      data.isDepartmentLabor === true
+    ]);
+    return res.rows[0];
+  }
 }
 
 module.exports = ContractorsRepository;

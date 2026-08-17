@@ -86,9 +86,30 @@ async function createContractor(req, res, next) {
   }
 }
 
+async function deleteContractor(req, res, next) {
+  try {
+    const { id } = req.params;
+    const deleted = await ContractorsService.deleteContractor(id);
+    return res.json({ success: true, deleted });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function createLaborer(req, res, next) {
+  try {
+    const laborer = await ContractorsService.createLaborer(req.body);
+    return res.json({ success: true, laborer });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getContractors,
   createContractor,
+  deleteContractor,
+  createLaborer,
   getDailyTargets,
   createDailyTarget,
   updateDailyTarget,

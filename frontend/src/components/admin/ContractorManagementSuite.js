@@ -919,10 +919,10 @@ export const ContractorManagementSuite = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {(state.laborers || [])
               .filter(l => (laborFilterContractor === 'ALL' ? true : l.contractorId === laborFilterContractor))
-              .map((laborer) => {
+              .map((laborer, lIdx) => {
                 const contractor = (state.contractors || []).find(c => c.id === laborer.contractorId);
                 return (
-                  <div key={laborer.id} className="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-2 hover:border-slate-700 transition">
+                  <div key={laborer.id || `laborer-${lIdx}`} className="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-2 hover:border-slate-700 transition">
                     <div className="flex items-start justify-between">
                       <div>
                         <span className="text-[10px] font-extrabold text-purple-400 bg-purple-950 border border-purple-800 px-2 py-0.5 rounded uppercase">
@@ -981,7 +981,7 @@ export const ContractorManagementSuite = () => {
                   <input
                     type="text"
                     required
-                    value={editLaborerName}
+                    value={editLaborerName || ''}
                     onChange={(e) => setEditLaborerName(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold"
                   />
@@ -989,12 +989,12 @@ export const ContractorManagementSuite = () => {
                 <div>
                   <label className="text-xs font-bold text-slate-400 uppercase block mb-1">Assigned Contractor</label>
                   <select
-                    value={editLaborerContractorId}
+                    value={editLaborerContractorId || 1}
                     onChange={(e) => setEditLaborerContractorId(parseInt(e.target.value, 10))}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold"
                   >
-                    {(state.contractors || []).map(c => (
-                      <option key={c.id} value={c.id}>{c.companyName} ({c.tradeType})</option>
+                    {(state.contractors || []).map((c, cIdx) => (
+                      <option key={c.id || `c-${cIdx}`} value={c.id}>{c.companyName} ({c.tradeType})</option>
                     ))}
                   </select>
                 </div>
@@ -1004,7 +1004,7 @@ export const ContractorManagementSuite = () => {
                 <div>
                   <label className="text-xs font-bold text-slate-400 uppercase block mb-1">Skill Category</label>
                   <select
-                    value={editLaborerSkill}
+                    value={editLaborerSkill || 'MASON'}
                     onChange={(e) => setEditLaborerSkill(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold"
                   >
@@ -1025,7 +1025,7 @@ export const ContractorManagementSuite = () => {
                     type="number"
                     min={300}
                     max={3000}
-                    value={editDailyWage}
+                    value={editDailyWage || 750}
                     onChange={(e) => setEditDailyWage(parseInt(e.target.value, 10) || 750)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-amber-400 font-mono font-extrabold"
                   />
@@ -1037,7 +1037,7 @@ export const ContractorManagementSuite = () => {
                   <label className="text-xs font-bold text-slate-400 uppercase block mb-1">Phone Number</label>
                   <input
                     type="text"
-                    value={editLaborerPhone}
+                    value={editLaborerPhone || ''}
                     onChange={(e) => setEditLaborerPhone(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white"
                   />
@@ -1046,7 +1046,7 @@ export const ContractorManagementSuite = () => {
                   <label className="text-xs font-bold text-slate-400 uppercase block mb-1">ID / Aadhaar Number</label>
                   <input
                     type="text"
-                    value={editLaborerIdNum}
+                    value={editLaborerIdNum || ''}
                     onChange={(e) => setEditLaborerIdNum(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-mono"
                   />

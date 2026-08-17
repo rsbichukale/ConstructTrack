@@ -4,6 +4,8 @@ const contractorsController = require('./contractors.controller');
 
 router.get('/', contractorsController.getContractors);
 router.post('/', contractorsController.createContractor);
+router.delete('/:id', contractorsController.deleteContractor);
+router.post('/laborers', contractorsController.createLaborer);
 router.get('/targets', contractorsController.getDailyTargets);
 router.post('/targets', contractorsController.createDailyTarget);
 router.patch('/targets/:id', contractorsController.updateDailyTarget);
